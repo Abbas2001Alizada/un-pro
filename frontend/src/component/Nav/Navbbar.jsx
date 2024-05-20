@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "../../../public/photoes/logo.png";
 import { useState } from "react";
-import CheckFormButton from "../checking/App";
+import CheckFormButton from "../checking/checkform";
 import { Link } from "react-router-dom";
 
 
