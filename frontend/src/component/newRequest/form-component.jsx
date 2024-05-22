@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const FormComponent = () => {
   const [stage, setStage] = useState(1);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    fatherName: '',
-    motherName: '',
-    spouseName: '',
-    children: '',
-    spouseFatherName: '',
+    h_Name: "",
+    h_fatherName: "",
+    h_ID: "",
+    w_Name: "",
+    w_fatherName: "",
+    w_ID: "",
+    marriage_date: "",
+    children_number: "",
   });
 
   const handleChange = (e) => {
@@ -37,23 +38,35 @@ const FormComponent = () => {
       case 1:
         return (
           <div>
-            <h2 className="text-xl font-semibold mb-4">Stage 1: Personal Information</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              مرحله اول: معلومات شوهر
+            </h2>
             <label className="block mb-2">
-              First Name:
+              نام شوهر
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="h_Name"
+                value={formData.h_NameName}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
             </label>
             <label className="block mb-2">
-              Last Name:
+            نام پدر شوهر
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName}
+                name="Name"
+                value={formData.h_fatherName}
+                onChange={handleChange}
+                className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
+              />
+            </label>
+            <label className="block mb-2">
+            نمبر تذکره شوهر
+              <input
+                type="text"
+                name="h_ID"
+                value={formData.h_ID}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
@@ -63,23 +76,35 @@ const FormComponent = () => {
       case 2:
         return (
           <div>
-            <h2 className="text-xl font-semibold mb-4">Stage 2: Parents Information</h2>
+            <h2 className="text-xl font-semibold mb-4">
+            مرحله دوم: معلومات خانم
+            </h2>
             <label className="block mb-2">
-              Father's Name:
+              نام خانم
               <input
                 type="text"
-                name="fatherName"
-                value={formData.fatherName}
+                name="w_Name"
+                value={formData.w_Name}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
             </label>
             <label className="block mb-2">
-              Mother's Name:
+              نام پدر خانم
               <input
                 type="text"
-                name="motherName"
-                value={formData.motherName}
+                name="w_fatherName"
+                value={formData.w_fatherNameName}
+                onChange={handleChange}
+                className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
+              />
+            </label>
+            <label className="block mb-2">
+              نمبر تذکره خانم
+              <input
+                type="text"
+                name="w_id"
+                value={formData.w_ID}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
@@ -89,36 +114,29 @@ const FormComponent = () => {
       case 3:
         return (
           <div>
-            <h2 className="text-xl font-semibold mb-4">Stage 3: Spouse and Children Information</h2>
+            <h2 className="text-xl font-semibold mb-4">
+            مرحله سوم:معلومات ازدواج و فرزندان
+            </h2>
             <label className="block mb-2">
-              Spouse Name:
+            تاریخ ازدواج
               <input
                 type="text"
-                name="spouseName"
-                value={formData.spouseName}
+                name="marriage_date"
+                value={formData.marriage_date}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
             </label>
             <label className="block mb-2">
-              Spouse's Father Name:
+            تعداد فرزندان
               <input
                 type="text"
-                name="spouseFatherName"
-                value={formData.spouseFatherName}
+                name="children_number"
+                value={formData.children_number}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
-            </label>
-            <label className="block mb-2">
-              Number of Children:
-              <input
-                type="number"
-                name="children"
-                value={formData.children}
-                onChange={handleChange}
-                className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
-              />
+
             </label>
           </div>
         );
@@ -131,11 +149,28 @@ const FormComponent = () => {
     <div className="max-w-xl w-full bg-white p-6 rounded-lg shadow-lg mt-8">
       <nav className="mb-6">
         <ul className="flex space-x-4">
-          <li className={`py-2 px-4 rounded-md ${stage === 1 ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>Stage 1</li>
-          <li className={`py-2 px-4 rounded-md ${stage === 2 ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>Stage 2</li>
-          <li className={`py-2 px-4 rounded-md ${stage === 3 ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>Stage 3</li>
+          <li
+            className={`py-2 px-4 rounded-md ${
+              stage === 1 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            Stage 1
+          </li>
+          <li
+            className={`py-2 px-4 rounded-md ${
+              stage === 2 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            Stage 2
+          </li>
+          <li
+            className={`py-2 px-4 rounded-md ${
+              stage === 3 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            Stage 3
+          </li>
         </ul>
-        <li>Just for tesing </li>
       </nav>
       {renderStageContent()}
       <div className="mt-6 flex justify-between">
