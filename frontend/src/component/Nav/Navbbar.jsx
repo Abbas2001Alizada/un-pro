@@ -12,7 +12,7 @@ const Nav = ({openform}) => {
     setIsSearchFormOpen(!isSearchFormOpen);
   };
   return (
-    <div id="total" className="w-full md:flex lg:flex bg-red-600   text-white p-2">
+    <div id="total" className="w-full md:flex lg:flex bg-red-950 text-white p-2">
       <div id="logo" className=" basis-1/2">
         {/* Logo Section */}
         <div className="flex justify-center items-center">
