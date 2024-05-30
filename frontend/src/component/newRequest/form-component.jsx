@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
-const FormComponent = () => {
+const NewRequest = () => {
   const [stage, setStage] = useState(1);
   const [formData, setFormData] = useState({
     h_Name: "",
     h_fatherName: "",
-    h_ID: "",
+    h_NIC: "",
     w_Name: "",
     w_fatherName: "",
-    w_ID: "",
+    w_NIC: "",
     marriage_date: "",
     children_number: "",
   });
@@ -46,7 +46,7 @@ const FormComponent = () => {
               <input
                 type="text"
                 name="h_Name"
-                value={formData.h_NameName}
+                value={formData.h_Name}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
@@ -55,7 +55,7 @@ const FormComponent = () => {
             نام پدر شوهر
               <input
                 type="text"
-                name="Name"
+                name="h_fatherName"
                 value={formData.h_fatherName}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
@@ -65,7 +65,7 @@ const FormComponent = () => {
             نمبر تذکره شوهر
               <input
                 type="text"
-                name="h_ID"
+                name="h_NIC"
                 value={formData.h_ID}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
@@ -94,7 +94,7 @@ const FormComponent = () => {
               <input
                 type="text"
                 name="w_fatherName"
-                value={formData.w_fatherNameName}
+                value={formData.w_fatherName}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
@@ -103,8 +103,8 @@ const FormComponent = () => {
               نمبر تذکره خانم
               <input
                 type="text"
-                name="w_id"
-                value={formData.w_ID}
+                name="w_NIC"
+                value={formData.w_NIC}
                 onChange={handleChange}
                 className="block w-full mt-1 p-2 border border-gray-300 rounded-md"
               />
@@ -195,4 +195,4 @@ const FormComponent = () => {
   );
 };
 
-export default FormComponent;
+export default NewRequest;
