@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { BrowserRouter, Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterChild from "./pages/RegisterChild";
@@ -10,14 +10,14 @@ function App() {
   return (
     <>
       {/* <Link to="/dashoard">Dashboard</Link> */}
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/" element={<DefaultLayout />} />
           <Route path="/child/registeration" element={<RegisterChild />} />
         </Routes>
-      </Router>
+      </BrowserRouter>
     </>
   );
 }

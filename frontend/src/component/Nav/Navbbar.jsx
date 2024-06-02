@@ -41,7 +41,7 @@ const Nav = ({openform}) => {
           <CheckFormButton onClick={toggleSearchForm}/>
         </a>
         
-        <Link  to="/dashboard" className="text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
+        <Link  to="/login" className="text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
           <button id="">دشبورد</button>
         </Link>
       </nav>

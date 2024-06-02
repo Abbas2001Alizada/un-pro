@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-
+import axios from "axios";
 function LoginPage() {
   // just for testing purposes
-  const user = "ali";
-  if (user) {
-    return <Navigate to="/dashboard" />;
-  }
+  // const user = "";
+  // if (user) {
+  //   return <Navigate to="/dashboard" />;
+  // }
+
+  useEffect(() => {
+    const url = "http://localhost:8000/test";
+    axios
+      .get(url)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-900">
