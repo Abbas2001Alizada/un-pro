@@ -1,49 +1,33 @@
-import mysql from'mysql';
 import express from 'express';
-// import { Sequelize } from 'sequelize';
+import bodyParser from 'body-parser';
 import cors from 'cors';
-const app = express();
-const port = process.env.PORT || 8000;
-// for solving the cross origin problem
-app.use(cors())
-// parsing the incoming request to json  encoding
-app.use(express.json());
+import userRout from './routes/userRout.js';
+import recordRout from './routes/recordsRout.js';
+import childrenRout from './routes/childrenRout.js';
+import appointmentRout from './routes/appointmentRout.js';
+import sequelize from './dbconnection.js';
+const port = 8038
+const app = express()
 
-const db=mysql.createConnection({
-    host:'localhost',
-    user:'root', 
-    password:'Abbasjan123@',
-    database:'appointment'
+app.get('/', (req, res) => {
+    res.send('home page')
 })
-
-app.get("/test", (req, res) => {
-    const listData = [
-        {
-            id: 1,
-            name: "ali",
-            age: 23,
-        },
-        {
-            id: 2,
-            name: "ahmad",
-            age: 25,
-        },
-        {
-            id: 3,
-            name: "Kamran",
-            age: 33,
-        },
-    ];
-    res.status(200).json(listData);
-})
-
-// // starting point
-app.listen(port, () => {
-    console.log(`server is running on port ${port}`);
-});
+app.use(cors());
+app.use(bodyParser.json())
+app.use('/users', userRout)
+app.use('/records',recordRout)
+app.use('/children',childrenRout)
+app.use('/appointment', appointmentRout)
 
 
-// const sequelize = new Sequelize('appointment', 'root', 'Abbasjan123@', {
-//     dialect:'mysql',
-//     host:'localhost'})
-//     module.exports=sequelize;
+
+// Sync database and start server
+sequelize.sync({ force: false }) // set to true only if you want to drop and recreate tables
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch(error => {
+    console.error('Unable to connect to the database:', error);
+  });
