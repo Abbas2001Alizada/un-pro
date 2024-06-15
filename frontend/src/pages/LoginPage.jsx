@@ -1,72 +1,63 @@
-import React, { useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import axios from "axios";
-function LoginPage() {
-  // just for testing purposes
-  // const user = "";
-  // if (user) {
-  //   return <Navigate to="/dashboard" />;
-  // }
+import React, { useState } from 'react';
+import axios from 'axios';
 
-  useEffect(() => {
-    const url = "http://localhost:8000/test";
-    axios
-      .get(url)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+const LoginPage = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(''); // Reset error message
+
+    try {
+      const response = await axios.post('http://localhost:8038/users/login', { username, password });
+      if (response.status === 200) {
+        window.location.href = '/Dashboard'; // Navigate to the next page
+      }
+    } catch (error) {
+      setError('نام کاربری یا رمز عبور اشتباه است');
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-red-900">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-          ورود به حساب کاربری
-        </h2>
-        <form>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="username"
-            >
-              نام کاربری
-            </label>
+    <div className="flex items-center justify-center min-h-screen bg-red-950">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
+        {/* <h2 className="text-3xl font-bold text-center text-green-900 bg-red-950 rounded">ورود</h2> */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">نام کاربری</label>
             <input
               type="text"
               id="username"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="نام کاربری خود را وارد کنید"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              required
             />
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              رمز عبور
-            </label>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">رمز عبور</label>
             <input
               type="password"
               id="password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="رمز عبور خود را وارد کنید"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              required
             />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              ورود
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full py-3 text-white bg-red-950 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          >
+            ورود
+          </button>
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </form>
       </div>
     </div>
   );
-}
+};
 
 export default LoginPage;

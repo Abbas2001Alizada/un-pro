@@ -1,5 +1,6 @@
 import { useState } from "react";
-import NewRequest from "../newRequest/form-component";
+import NewRecord from "./newRecord.jsx";
+import { Link } from "react-router-dom";
 
 function Instruction(openWindow) {
   const [isRWindowOpen, setIsRwindowOpen] = useState(false);
@@ -14,7 +15,10 @@ function Instruction(openWindow) {
       >
         مراحل اخذ نکاح خط :
       </h1>
-      <ol className=" items-start list-decimal  space-y-4 text-gray-700" dir="rtl">
+      <ol
+        className=" items-start list-decimal  space-y-4 text-gray-700"
+        dir="rtl"
+      >
         <li className="it">
           جمع‌آوری مدارک لازم: شناسنامه کارت ملی عکس پرسنلی فرم درخواست گذرنامه
         </li>
@@ -41,16 +45,15 @@ function Instruction(openWindow) {
           پیگیری وضعیت درخواست: مراجعه به وب‌سایت اداره گذرنامه وارد کردن کد
           رهگیری بررسی وضعیت صدور گذرنامه
         </li>
-
       </ol>
-
+<Link to="/records">
       <button
         onClick={toggleIsRwindowOpen}
         className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
-      >
-        درخواست جدید برای اخد نکاح خط
-      </button>
-      {isRWindowOpen && <NewRequest />}
+      
+        >درخواست جدید برای اخد نکاح خط
+      </button></Link>
+      {isRWindowOpen && <NewRecord />}
     </div>
   );
 }

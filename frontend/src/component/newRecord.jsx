@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 
-const NewRequest = () => {
+const NewRecord = () => {
   const [stage, setStage] = useState(1);
   const [formData, setFormData] = useState({
-    h_Name: "",
-    h_fatherName: "",
-    h_NIC: "",
+    Name: "",
+    lastName: "",
+    fatherName: "",
+    GfatherName: "",
+    NIC: "",
     w_Name: "",
     w_fatherName: "",
     w_NIC: "",
@@ -195,4 +197,4 @@ const NewRequest = () => {
   );
 };
 
-export default NewRequest;
+export default NewRecord;

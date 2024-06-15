@@ -1,7 +1,7 @@
-import Nav from "../component/Nav/Navbbar";
-import Instruction from "../component/instruction/instruction";
-import Footer from "../component/fotter/footer";
-import SearchForm from "../component/checking/checkForm";
+import Nav from "../component/Navbbar.jsx";
+import Instruction from "../component/instruction.jsx";
+import Footer from "../component/footer.jsx";
+import checkFormButton from "../component/checkForm.jsx";
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
