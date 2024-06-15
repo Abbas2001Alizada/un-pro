@@ -1,5 +1,21 @@
 import User from "../Models/user.js";
 
+export const login = async (req, res) => {
+  const { username, password } = req.body;
+  
+  try {
+    const user = await User.findOne({ where: { username, password } });
+    
+    if (user) {
+      // Assuming user is authenticated successfully
+      return res.status(200).json({ message: 'Login successful' });
+    } else {
+      return res.status(401).json({ message: 'Incorrect email or password' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
+  }};
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();

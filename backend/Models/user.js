@@ -24,8 +24,20 @@ const User = sequelize.define('User', {
         validate: {
             isEmail: true
         }
-    }
+    },
     
+       profile_picture:{
+type: DataTypes.STRING,},
+
+profile_picture_path:{
+    type: DataTypes.STRING,
+    
+
+       } 
+    
+    
+},{
+    timestamps:true
 })
 
 export default User;

@@ -20,9 +20,9 @@ app.use('/children',childrenRout)
 app.use('/appointment', appointmentRout)
 
 
-
 // Sync database and start server
-sequelize.sync({ force: false }) // set to true only if you want to drop and recreate tables
+sequelize.sync({ alter: true }) // brings the neccessary changes to the table
+
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
