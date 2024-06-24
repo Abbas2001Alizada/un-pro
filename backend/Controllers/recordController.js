@@ -1,5 +1,68 @@
+import records from "../Models/records.js";
+import Appointment from "../Models/appointment.js";
 
-import records from '../Models/records.js';
+// helper function
+
+// controllers/processUsers.js
+
+// import User from '../models/userModel.js';
+// import { sequelize } from 'sequelize';
+import cron from "node-cron";
+import sequelize from "../dbconnection.js";
+
+// Function to process users in batches of 50
+export async function processUsersDaily() {
+  try {
+    const currentDate = new Date();
+
+    // Check if today is Friday, and if so, skip processing
+    if (currentDate.getDay() === 5) {
+      console.log("Skipping processing on Friday. Rescheduling for Saturday.");
+      return;
+    }
+
+    const pendingAppointments = await appointment.findAll({
+      where: {
+        state: "pending",
+      },
+      order: [["id", "ASC"]],
+      limit: 50,
+    });
+
+    if (pendingAppointments.length > 0) {
+      const minAppointmentId = minAppointmentId[0].id;
+
+      await sequelize.transaction(async (t) => {
+        // Update the status of the next 50 pending users to 'processing'
+        await User.update(
+          { status: "processing" },
+          {
+            where: {
+              id: {
+                [sequelize.Op.gte]: minUserId,
+                [sequelize.Op.lt]: minUserId + 50,
+              },
+            },
+            transaction: t,
+          }
+        );
+      });
+
+      console.log(`Processed users with IDs ${minUserId} to ${minUserId + 49}`);
+    } else {
+      console.log("No pending users with appointment today to process.");
+    }
+  } catch (error) {
+    console.error("Error processing users:", error);
+    throw error;
+  }
+}
+
+// Schedule cron job to run daily at 00:00 (midnight), except on Fridays
+cron.schedule("0 0 * * *", async () => {
+  console.log("Running daily user processing job...");
+  await processUsersDaily();
+});
 
 //find all records
 export const getAllRecords = async (req, res) => {
@@ -18,7 +81,7 @@ export const getRecordById = async (req, res) => {
     if (record) {
       res.status(200).json(record);
     } else {
-      res.status(404).json({ error: 'Record not found' });
+      res.status(404).json({ error: "Record not found" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -27,9 +90,55 @@ export const getRecordById = async (req, res) => {
 //create a new record
 export const createRecord = async (req, res) => {
   try {
-     const { Name, lastName, fatherName, GfatherName, gender, birthDate, birthPlace, residency, NIC, nation, religion, state } = req.body;
-    const record = await records.create({ Name, lastName, fatherName, GfatherName, gender, birthDate, birthPlace, residency, NIC, nation, religion, state, coupleId: 2 });
-    res.status(201).json(record);
+    const { husbandData, wifeData } = req.body;
+
+    //  first we should enter data to the appointment table
+    const appointment = await Appointment.create({
+      familyCode: new Date().getTime().toString().slice(7, 13),
+      state: "pending",
+    });
+    let family_id = appointment.id;
+
+    sequelize.transaction(async (t) => {
+      await records.create(
+        {
+          Name: husbandData.Name,
+          lastName: husbandData.lastName,
+          fatherName: husbandData.fatherName,
+          GfatherName: husbandData.GfatherName,
+          gender: husbandData.gender,
+          birthDate: husbandData.birthDate,
+          birthPlace: husbandData.birthPlace,
+          residency: husbandData.residency,
+          NIC: husbandData.NIC,
+          nation: husbandData.nation,
+          religion: husbandData.religion,
+          state: husbandData.state,
+          coupleId: family_id,
+        },
+        { transaction: t }
+      );
+      await records.create(
+        {
+          Name: wifeData.Name,
+          lastName: wifeData.lastName,
+          fatherName: wifeData.fatherName,
+          GfatherName: wifeData.GfatherName,
+          gender: wifeData.gender,
+          birthDate: wifeData.birthDate,
+          birthPlace: wifeData.birthPlace,
+          residency: wifeData.residency,
+          NIC: wifeData.NIC,
+          nation: wifeData.nation,
+          religion: wifeData.religion,
+          state: wifeData.state,
+          coupleId: family_id,
+        },
+        { transaction: t }
+      );
+    });
+
+    res.status(201).json({"message":'Record has been submmited successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -39,15 +148,46 @@ export const createRecord = async (req, res) => {
 export const updateRecord = async (req, res) => {
   try {
     const { id } = req.params;
-    const { Name, lastName, fatherName, GfatherName, gender, birthDate, birthPlace, residency, NIC, nation, religion, state, coupleId } = req.body;
-    const [updated] = await records.update({ Name, lastName, fatherName, GfatherName, gender, birthDate, birthPlace, residency, NIC, nation, religion, state, coupleId }, {
-      where: { id }
-    });
+    const {
+      Name,
+      lastName,
+      fatherName,
+      GfatherName,
+      gender,
+      birthDate,
+      birthPlace,
+      residency,
+      NIC,
+      nation,
+      religion,
+      state,
+      coupleId,
+    } = req.body;
+    const [updated] = await records.update(
+      {
+        Name,
+        lastName,
+        fatherName,
+        GfatherName,
+        gender,
+        birthDate,
+        birthPlace,
+        residency,
+        NIC,
+        nation,
+        religion,
+        state,
+        coupleId,
+      },
+      {
+        where: { id },
+      }
+    );
     if (updated) {
       const updatedRecord = await records.findByPk(id);
       res.status(200).json(updatedRecord);
     } else {
-      res.status(404).json({ error: 'Record not found' });
+      res.status(404).json({ error: "Record not found" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -58,12 +198,12 @@ export const deleteRecord = async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await records.destroy({
-      where: { id }
+      where: { id },
     });
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ error: 'Record not found' });
+      res.status(404).json({ error: "Record not found" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -1,14 +1,16 @@
 import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useMatch, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Dashboard = () => {
-  const user = "ali";
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+
+  
+  const match = useMatch('/dashboard/:id');
+  const userId = match.params.id;
+
+ 
   const [selectedOption, setSelectedOption] = useState("today");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -20,7 +22,7 @@ const Dashboard = () => {
           <img src={logo} alt="" />
         </div>
         <div>
-          <p className="animate-pulse opacity-0 duration-100 sm:text-xl md:text-2xl lg:text-4xl">
+          <p className="animate-pulse opacity-0 duration-100 sm:text-xl md:text-2xl lg:text-4xl gradiant-text">
             به دشبورد سیستم خوش آمدید
           </p>
         </div>
@@ -35,18 +37,16 @@ const Dashboard = () => {
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
            
-                <Link to='/profile'
+                <Link to={`/profile/${userId}`}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
                   <button>بازدید از پروفایل</button>
                 </Link>
-              <a
-                href="#"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-              >
-                خروج
-              </a>
-            </div>
+              <Link to='/'
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                
+                  <button>خروج از دشبورد</button>
+              </Link>            </div>
           )}
         </div>
       </nav>

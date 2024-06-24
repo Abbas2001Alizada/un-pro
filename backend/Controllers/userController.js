@@ -1,20 +1,63 @@
 import User from "../Models/user.js";
+import upload from "../middleware/upload.js";
+import fs from 'fs'
 
-export const login = async (req, res) => {
+
+
+// export const uploadUserImage = async (req, res) => {
+//   try {
+//     const { name, username, email, password } = req.body;
+//     const image = req.file.buffer;
+//     await User.create({ name, username, email, password, image });
+//     res.json({ "message": 'Image uploaded...' });
+//   } catch (err) {
+//     res.status(500).json(err.message);
+//   }
+// };
+
+
+
+
+// Authenticate user based on username and password
+export const authenticateUser = async (req, res) => {
   const { username, password } = req.body;
-  
+
   try {
-    const user = await User.findOne({ where: { username, password } });
-    
-    if (user) {
-      // Assuming user is authenticated successfully
-      return res.status(200).json({ message: 'Login successful' });
-    } else {
-      return res.status(401).json({ message: 'Incorrect email or password' });
+    const user = await User.findOne({
+      attributes: ['id'],
+      where: { username, password },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid credentials' });
     }
+
+    res.json({ userId: user.id });
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error });
-  }};
+    console.error('Authentication error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Fetch user details by ID
+export const getUserDetails = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: ['name', 'username', 'password', 'email', 'image'],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -25,46 +68,52 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findByPk(id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 export const createUser = async (req, res) => {
   try {
-    const { name, username, password, email } = req.body;
-    const user = await User.create({ name, username, password, email });
+    const { name, username, password, image, email } = req.body;
+    const user = await User.create({ name, username, password, image, email });
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 export const updateUser = async (req, res) => {
+
+  const { name, username, password, email } = req.body;
+  const image = req.file ? req.file.filename : null;
+
   try {
-    const { id } = req.params;
-    const { name, username, password, email } = req.body;
-    const [updated] = await User.update({ name, username, password, email }, {
-      where: { id }
-    });
-    if (updated) {
-      const updatedUser = await User.findByPk(id);
-      res.status(200).json(updatedUser);
-    } else {
-      res.status(404).json({ error: 'User not found' });
+    const user = await User.findByPk(req.params.id);
+   
+    if (image) {
+      if (fs.existsSync(`uploads/${user.image}`)) {
+        fs.unlinkSync(`uploads/${user.image}`);
+      }
     }
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.name = name;
+    user.username = username;
+    if (password) {
+      user.password = password; // Ensure to hash the password before saving
+    }
+    user.email = email;
+    if (image) {
+      user.image = image;
+    }
+
+    await user.save();
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'An error occurred while updating the user' });
   }
+  // });
 };
 
 export const deleteUser = async (req, res) => {

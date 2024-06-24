@@ -17,9 +17,9 @@ function App() {
         <Routes>
           <Route path="/records" element={<Record />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="/" element={<DefaultLayout />} />
-          <Route path="/profile" element={<Profilepage />} />
+          <Route path="/profile/*" element={<Profilepage />} />
           <Route path="/child/registeration" element={<RegisterChild />} />
         </Routes>
       </BrowserRouter>

@@ -1,22 +1,35 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import multer from 'multer';
 import userRout from './routes/userRout.js';
 import recordRout from './routes/recordsRout.js';
 import childrenRout from './routes/childrenRout.js';
 import appointmentRout from './routes/appointmentRout.js';
 import sequelize from './dbconnection.js';
+import path from 'path'
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 const port = 8038
 const app = express()
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+// Middleware to serve static files
+const uploadsDirectory = join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsDirectory));
+
 app.get('/', (req, res) => {
-    res.send('home page')
+  res.send('home page')
 })
 app.use(cors());
 app.use(bodyParser.json())
 app.use('/users', userRout)
-app.use('/records',recordRout)
-app.use('/children',childrenRout)
+app.use('/records', recordRout)
+app.use('/children', childrenRout)
 app.use('/appointment', appointmentRout)
 
 

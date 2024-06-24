@@ -3,6 +3,7 @@ import LoadingOverlay from "../component/LoadingOverlay.jsx"; // Import the Load
 import axios from "axios";
 
 const Record = () => {
+  const [msg_success, setMsgSuccess] = useState("");
   const [husbandData, setHusbandData] = useState({
     Name: "",
     lastName: "",
@@ -51,9 +52,41 @@ const Record = () => {
 
     try {
       // console.log(response.data);
-   const response = await axios.post('http://localhost:8038/records', husbandData);
-      console.log('record submitted:',husbandData);
-
+      const coupleData = {
+        husbandData: {
+          Name: husbandData.Name,
+          lastName: husbandData.lastName,
+          fatherName: husbandData.fatherName,
+          GfatherName: husbandData.GfatherName,
+          gender: husbandData.gender,
+          birthDate: husbandData.birthDate,
+          birthPlace: husbandData.birthPlace,
+          residency: husbandData.residency,
+          NIC: husbandData.NIC,
+          nation: husbandData.nation,
+          religion: husbandData.religion,
+          state: husbandData.state,
+        },
+        wifeData: {
+          Name: wifeData.Name,
+          lastName: wifeData.lastName,
+          fatherName: wifeData.fatherName,
+          GfatherName: wifeData.GfatherName,
+          gender: wifeData.gender,
+          birthDate: wifeData.birthDate,
+          birthPlace: wifeData.birthPlace,
+          residency: wifeData.residency,
+          NIC: wifeData.NIC,
+          nation: wifeData.nation,
+          religion: wifeData.religion,
+          state: wifeData.state,
+        },
+      };
+      const response = await axios.post(
+        "http://localhost:8038/records",
+        coupleData
+      );
+      setMsgSuccess(response.data.message);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -206,8 +239,8 @@ const Record = () => {
               <label className="block text-sm font-bold mb-2">نام:</label>
               <input
                 type="text"
-                name="name"
-                value={wifeData.name}
+                name="Name"
+                value={wifeData.Name}
                 onChange={handleWifeChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
@@ -240,8 +273,8 @@ const Record = () => {
               </label>
               <input
                 type="text"
-                name="grandFatherName"
-                value={wifeData.grandFatherName}
+                name="GfatherName"
+                value={wifeData.GfatherName}
                 onChange={handleWifeChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
@@ -341,6 +374,9 @@ const Record = () => {
           </button>
         </div>
       </form>
+      <div className="mt-6 text-center bg-green-800 text-white py-2 px-4 rounded">
+        {msg_success != null ? <span>{msg_success}</span> : ""}
+      </div>
     </div>
   );
 };

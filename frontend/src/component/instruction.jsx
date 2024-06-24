@@ -1,12 +1,8 @@
 import { useState } from "react";
-import NewRecord from "./newRecord.jsx";
 import { Link } from "react-router-dom";
 
-function Instruction(openWindow) {
-  const [isRWindowOpen, setIsRwindowOpen] = useState(false);
-  const toggleIsRwindowOpen = () => {
-    setIsRwindowOpen(!isRWindowOpen);
-  };
+function Instruction() {
+
   return (
     <div className="flex flex-col items-center p-8 max-w-3xl mx-auto bg-gray-100 rounded-lg shadow-md">
       <h1
@@ -46,14 +42,11 @@ function Instruction(openWindow) {
           رهگیری بررسی وضعیت صدور گذرنامه
         </li>
       </ol>
-<Link to="/records">
-      <button
-        onClick={toggleIsRwindowOpen}
-        className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
-      
-        >درخواست جدید برای اخد نکاح خط
-      </button></Link>
-      {isRWindowOpen && <NewRecord />}
+      <Link to="/records">
+        <button className="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">
+          درخواست جدید برای اخد نکاح خط
+        </button>
+      </Link>
     </div>
   );
 }
