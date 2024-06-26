@@ -1,14 +1,28 @@
+import axios from "axios";
 import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useMatch, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
 
 const Dashboard = () => {
+ const match = useMatch('/dashboard/:id');
+  const id = match.params.id;
+  const[previewUrl,setPreviewUrl]=useState()
 
-  
-  const match = useMatch('/dashboard/:id');
-  const userId = match.params.id;
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8038/users/${id}`);
+        const { name, username, email, image } = response.data;
+        setPreviewUrl(`http://localhost:8038/uploads/${image}`);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, [id])
+ 
 
  
   const [selectedOption, setSelectedOption] = useState("today");
@@ -29,7 +43,7 @@ const Dashboard = () => {
 
         <div className="relative">
           <img
-            src={profile}
+            src={previewUrl}
             alt="Profile"
             className="rounded-full w-10 h-10 cursor-pointer"
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -37,7 +51,7 @@ const Dashboard = () => {
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
            
-                <Link to={`/profile/${userId}`}
+                <Link to={`/profile/${id}`}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
                   <button>بازدید از پروفایل</button>

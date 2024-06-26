@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import LoadingOverlay from "../component/LoadingOverlay.jsx"; // Import the LoadingOverlay component
+import React, { useState } from "react";
+import LoadingOverlay from "../component/LoadingOverlay.jsx";
 import axios from "axios";
 
 const Record = () => {
-  const [msg_success, setMsgSuccess] = useState("");
-  const [husbandData, setHusbandData] = useState({
+  const initialData = {
     Name: "",
     lastName: "",
     fatherName: "",
     GfatherName: "",
-    gender: "مرد",
+    gender: "",
     birthDate: "",
     birthPlace: "",
     residency: "",
@@ -17,353 +16,173 @@ const Record = () => {
     nation: "",
     religion: "",
     state: "",
-  });
-
-  const [wifeData, setWifeData] = useState({
-    Name: "",
-    lastName: "",
-    fatherName: "",
-    GfatherName: "",
-    gender: "زن",
-    birthDate: "",
-    birthPlace: "",
-    residency: "",
-    NIC: "",
-    nation: "",
-    religion: "",
-    state: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const handleHusbandChange = (e) => {
-    const { name, value } = e.target;
-    setHusbandData({ ...husbandData, [name]: value });
   };
 
-  const handleWifeChange = (e) => {
+  const [msg_success, setMsg_success] = useState("");
+  const [husbandData, setHusbandData] = useState({ ...initialData, gender: "مرد" });
+  const [wifeData, setWifeData] = useState({ ...initialData, gender: "زن" });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+
+    if (value.trim() === "") {
+      errorMsg = "این فیلد نباید خالی باشد";
+    } else if (["Name", "lastName", "fatherName", "GfatherName"].includes(name) && /\d/.test(value)) {
+      errorMsg = "این فیلد نباید حاوی عدد باشد";
+    } else if (name === "NIC" && !/^\d+$/.test(value)) {
+      errorMsg = "این فیلد باید فقط شامل اعداد باشد";
+    } else if (name === "birthDate" && new Date(value) > new Date()) {
+      errorMsg = "تاریخ تولد نباید در آینده باشد";
+    }
+
+    return errorMsg;
+  };
+
+  const handleChange = (e, setData, data) => {
     const { name, value } = e.target;
-    setWifeData({ ...wifeData, [name]: value });
+    setData({ ...data, [name]: value });
+
+    const errorMsg = validateField(name, value);
+    setErrors({ ...errors, [name]: errorMsg });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      // console.log(response.data);
-      const coupleData = {
-        husbandData: {
-          Name: husbandData.Name,
-          lastName: husbandData.lastName,
-          fatherName: husbandData.fatherName,
-          GfatherName: husbandData.GfatherName,
-          gender: husbandData.gender,
-          birthDate: husbandData.birthDate,
-          birthPlace: husbandData.birthPlace,
-          residency: husbandData.residency,
-          NIC: husbandData.NIC,
-          nation: husbandData.nation,
-          religion: husbandData.religion,
-          state: husbandData.state,
-        },
-        wifeData: {
-          Name: wifeData.Name,
-          lastName: wifeData.lastName,
-          fatherName: wifeData.fatherName,
-          GfatherName: wifeData.GfatherName,
-          gender: wifeData.gender,
-          birthDate: wifeData.birthDate,
-          birthPlace: wifeData.birthPlace,
-          residency: wifeData.residency,
-          NIC: wifeData.NIC,
-          nation: wifeData.nation,
-          religion: wifeData.religion,
-          state: wifeData.state,
-        },
-      };
-      const response = await axios.post(
-        "http://localhost:8038/records",
-        coupleData
-      );
-      setMsgSuccess(response.data.message);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
+    let formIsValid = true;
+    const newErrors = {};
+
+    Object.keys(husbandData).forEach((key) => {
+      const errorMsg = validateField(key, husbandData[key]);
+      if (errorMsg) {
+        formIsValid = false;
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    Object.keys(wifeData).forEach((key) => {
+      const errorMsg = validateField(key, wifeData[key]);
+      if (errorMsg) {
+        formIsValid = false;
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (formIsValid) {
+      setLoading(true);
+
+      try {
+        const coupleData = { husbandData, wifeData };
+        const response = await axios.post("http://localhost:8038/records", coupleData);
+        setMsg_success(response.data.message);
+
+        // Reset form data after successful submission
+        setHusbandData({ ...initialData, gender: "مرد" });
+        setWifeData({ ...initialData, gender: "زن" });
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 relative">
-      <LoadingOverlay loading={loading} />{" "}
-      {/* Include the LoadingOverlay component */}
+      <LoadingOverlay loading={loading} />
       <form className="w-full max-w-2xl" onSubmit={handleSubmit}>
         <div className="bg-dark-red-800 text-white p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-2xl mb-4 text-center">اطلاعات شوهر</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">نام:</label>
-              <input
-                type="text"
-                name="Name"
-                value={husbandData.Name}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                نام خانوادگی:
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={husbandData.lastName}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">نام پدر:</label>
-              <input
-                type="text"
-                name="fatherName"
-                value={husbandData.fatherName}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                نام پدربزرگ:
-              </label>
-              <input
-                type="text"
-                name="GfatherName"
-                value={husbandData.GfatherName}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">جنسیت:</label>
-              <select
-                name="gender"
-                value={husbandData.gender}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="مرد">مرد</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                تاریخ تولد:
-              </label>
-              <input
-                type="date"
-                name="birthDate"
-                value={husbandData.birthDate}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">محل تولد:</label>
-              <input
-                type="text"
-                name="birthPlace"
-                value={husbandData.birthPlace}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">محل اقامت:</label>
-              <input
-                type="text"
-                name="residency"
-                value={husbandData.residency}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">کد ملی:</label>
-              <input
-                type="text"
-                name="NIC"
-                value={husbandData.NIC}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">ملیت:</label>
-              <input
-                type="text"
-                name="nation"
-                value={husbandData.nation}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">دین:</label>
-              <input
-                type="text"
-                name="religion"
-                value={husbandData.religion}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">استان:</label>
-              <input
-                type="text"
-                name="state"
-                value={husbandData.state}
-                onChange={handleHusbandChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
+            {Object.keys(husbandData).map((key) => (
+              <div key={key}>
+                <label className="block text-sm font-bold mb-2">
+                  {key === "Name" && "نام"}
+                  {key === "lastName" && "نام خانوادگی"}
+                  {key === "fatherName" && "نام پدر"}
+                  {key === "GfatherName" && "نام پدربزرگ"}
+                  {key === "birthDate" && "تاریخ تولد"}
+                  {key === "birthPlace" && "محل تولد"}
+                  {key === "residency" && "محل اقامت"}
+                  {key === "NIC" && "کد ملی"}
+                  {key === "nation" && "ملیت"}
+                  {key === "religion" && "دین"}
+                  {key === "state" && "استان"}
+                </label>
+                {key === "gender" ? (
+                  <select
+                    name="gender"
+                    value={husbandData[key]}
+                    onChange={(e) => handleChange(e, setHusbandData, husbandData)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  >
+                    <option value="مرد">مرد</option>
+                  </select>
+                ) : (
+                  <input
+                    type={key === "birthDate" ? "date" : "text"}
+                    name={key}
+                    value={husbandData[key]}
+                    onChange={(e) => handleChange(e, setHusbandData, husbandData)}
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors[key] ? "border-red-500" : ""
+                    }`}
+                  />
+                )}
+                {errors[key] && <p className="text-red-500 text-xs italic">{errors[key]}</p>}
+              </div>
+            ))}
           </div>
         </div>
 
         <div className="bg-dark-red-800 text-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl mb-4 text-center">اطلاعات زن</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">نام:</label>
-              <input
-                type="text"
-                name="Name"
-                value={wifeData.Name}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                نام خانوادگی:
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={wifeData.lastName}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">نام پدر:</label>
-              <input
-                type="text"
-                name="fatherName"
-                value={wifeData.fatherName}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                نام پدربزرگ:
-              </label>
-              <input
-                type="text"
-                name="GfatherName"
-                value={wifeData.GfatherName}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">جنسیت:</label>
-              <select
-                name="gender"
-                value={wifeData.gender}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="زن">زن</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">
-                تاریخ تولد:
-              </label>
-              <input
-                type="date"
-                name="birthDate"
-                value={wifeData.birthDate}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">محل تولد:</label>
-              <input
-                type="text"
-                name="birthPlace"
-                value={wifeData.birthPlace}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">محل اقامت:</label>
-              <input
-                type="text"
-                name="residency"
-                value={wifeData.residency}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">کد ملی:</label>
-              <input
-                type="text"
-                name="NIC"
-                value={wifeData.NIC}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">ملیت:</label>
-              <input
-                type="text"
-                name="nation"
-                value={wifeData.nation}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">دین:</label>
-              <input
-                type="text"
-                name="religion"
-                value={wifeData.religion}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">استان:</label>
-              <input
-                type="text"
-                name="state"
-                value={wifeData.state}
-                onChange={handleWifeChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
+            {Object.keys(wifeData).map((key) => (
+              <div key={key}>
+                <label className="block text-sm font-bold mb-2">
+                  {key === "Name" && "نام"}
+                  {key === "lastName" && "نام خانوادگی"}
+                  {key === "fatherName" && "نام پدر"}
+                  {key === "GfatherName" && "نام پدربزرگ"}
+                  {key === "birthDate" && "تاریخ تولد"}
+                  {key === "birthPlace" && "محل تولد"}
+                  {key === "residency" && "محل اقامت"}
+                  {key === "NIC" && "کد ملی"}
+                  {key === "nation" && "ملیت"}
+                  {key === "religion" && "دین"}
+                  {key === "state" && "استان"}
+                </label>
+                {key === "gender" ? (
+                  <select
+                    name="gender"
+                    value={wifeData[key]}
+                    onChange={(e) => handleChange(e, setWifeData, wifeData)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  >
+                    <option value="زن">زن</option>
+                  </select>
+                ) : (
+                  <input
+                    type={key === "birthDate" ? "date" : "text"}
+                    name={key}
+                    value={wifeData[key]}
+                    onChange={(e) => handleChange(e, setWifeData, wifeData)}
+                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors[key] ? "border-red-500" : ""
+                    }`}
+                  />
+                )}
+                {errors[key] && <p className="text-red-500 text-xs italic">{errors[key]}</p>}
+              </div>
+            ))}
           </div>
         </div>
+
         <div className="mt-6 text-center">
           <button
             type="submit"
@@ -374,8 +193,8 @@ const Record = () => {
           </button>
         </div>
       </form>
-      <div className="mt-6 text-center bg-green-800 text-white py-2 px-4 rounded">
-        {msg_success != null ? <span>{msg_success}</span> : ""}
+      <div className="mt-6 text-center  text-white py-2 px-4 rounded">
+        {msg_success && <span>{msg_success}</span>}
       </div>
     </div>
   );

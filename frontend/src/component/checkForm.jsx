@@ -1,132 +1,139 @@
-import React, { useState } from "react";
-const CheckFormButton = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [husbandName, setHusbandName] = useState("");
-  const [husbandFatherName, setHusbandFatherName] = useState("");
-  const [wifeName, setWifeName] = useState("");
-  const [wifeFatherName, setWifeFatherName] = useState("");
-  const [numberOfChildren, setNumberOfChildren] = useState("");
+import React, { useState } from 'react';
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Here you can handle form submission, e.g., send data to a server
-    console.log("Form submitted with data:", {
-      husbandName,
-      husbandFatherName,
-      wifeName,
-      wifeFatherName,
-      numberOfChildren,
-    });
+const CheckForm = ({ onClose }) => {
+  const [searchType, setSearchType] = useState('specification');
+  const [formData, setFormData] = useState({
+    husbandName: '',
+    husbandNIC: '',
+    familyID: '',
+    husbandDOB: '',
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Reset errors when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
+  };
+
+  const validateForm = () => {
+    let validationErrors = {};
+
+    if (searchType === 'specification') {
+      if (!formData.husbandName) {
+        validationErrors.husbandName = 'نام زوج نمیتواند خالی باشد';
+      }
+      if (!formData.husbandNIC) {
+        validationErrors.husbandNIC = 'نمبر تذکره زوج نمیتواند خالی باشد';
+      }
+    } else if (searchType === 'id') {
+      if (!formData.familyID) {
+        validationErrors.familyID = 'کود خانواده نمیتواند خالی باشد';
+      }
+      if (!formData.husbandDOB) {
+        validationErrors.husbandDOB = 'تاریخ تولد زوج نمیتواند خالی باشد';
+      }
+    }
+
+    setErrors(validationErrors);
+
+    return Object.keys(validationErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      // Form submission logic
+      console.log('Form submitted:', formData);
+    }
   };
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)}>چک فورم</button>
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-          <div className="bg-white p-8 rounded shadow-md">
-            <h2 className="text-xl font-semibold mb-4"> جستجوفورم</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm  mb-2"
-                  htmlFor="husbandName"
-                >
-                  نام شوهر
-                </label>
-                <input
-                  className=" text-sm shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="husbandName"
-                  type="text"
-                  placeholder="نام شوهر را وارد کنید"
-                  value={husbandName}
-                  onChange={(e) => setHusbandName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="text-sm block text-gray-700 mb-2"
-                  htmlFor="husbandFatherName"
-                >
-                  نام پدر شوهر
-                </label>
-                <input
-                  className="text-sm text-bold shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="husbandFatherName"
-                  type="text"
-                  placeholder="نام پدر شوهر را وارد کنید"
-                  value={husbandFatherName}
-                  onChange={(e) => setHusbandFatherName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm  mb-2"
-                  htmlFor="wifeName"
-                >
-                  نام خانم
-                </label>
-                <input
-                  className=" text-sm shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="wifeName"
-                  type="text"
-                  placeholder="نام خانم را وارد کنید"
-                  value={wifeName}
-                  onChange={(e) => setWifeName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm  mb-2"
-                  htmlFor="wifeFatherName"
-                >
-                  نام پدر خانم
-                </label>
-                <input
-                  className=" text-sm shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="wifeFatherName"
-                  type="text"
-                  placeholder="نام پدر خانم را وارد کنید"
-                  value={wifeFatherName}
-                  onChange={(e) => setWifeFatherName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm  mb-2"
-                  htmlFor="numberOfChildren"
-                >
-                  تعداد فرزندان
-                </label>
-                <input
-                  className=" text-sm shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="numberOfChildren"
-                  type="number"
-                  placeholder="تعداد فرزندان را وارد کنید"
-                  value={numberOfChildren}
-                  onChange={(e) => setNumberOfChildren(e.target.value)}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  type="submit"
-                >
-                  جستجو
-                </button>
-                <button
-                  className="bg-gray-500 hover:bg-gray-700 text-white text-sm py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  onClick={() => setIsOpen(false)}
-                >
-                  لغو
-                </button>
-              </div>
-            </form>
-          </div>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-red-950 rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div className="flex justify-between mb-4">
+          <button
+            className={`px-4 py-2 ${searchType === 'specification' ? 'bg-blue-500 border-2 border-green-300 rounded text-white' : 'bg-gray-200'} rounded`}
+            onClick={() => setSearchType('specification')}
+          >
+            جستجو براساس مشخصات
+          </button>
+          <button
+            className={`px-4 py-2 ${searchType === 'id' ? 'bg-blue-500 border-2 border-green-300 rounded text-white' : 'bg-gray-200'} rounded`}
+            onClick={() => setSearchType('id')}
+          >
+            جستجو براساس شناسه
+          </button>
         </div>
-      )}
+
+        {searchType === 'specification' ? (
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-white">نام زوج</label>
+              <input
+                type="text"
+                name="husbandName"
+                value={formData.husbandName}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full border ${errors.husbandName ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+              />
+              {errors.husbandName && <p className="text-red-500 text-xs italic">{errors.husbandName}</p>}
+            </div>
+            <div className="mb-4">
+              <label className="block text-white">نمبر تذکره زوج</label>
+              <input
+                type="text"
+                name="husbandNIC"
+                value={formData.husbandNIC}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full border ${errors.husbandNIC ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+              />
+              {errors.husbandNIC && <p className="text-red-500 text-xs italic">{errors.husbandNIC}</p>}
+            </div>
+            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">جستجو</button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-white">کود خانواده</label>
+              <input
+                type="text"
+                name="familyID"
+                value={formData.familyID}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full border ${errors.familyID ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+              />
+              {errors.familyID && <p className="text-red-500 text-xs italic">{errors.familyID}</p>}
+            </div>
+            <div className="mb-4">
+              <label className="block text-white">تاریخ تولد زوج</label>
+              <input
+                type="date"
+                name="husbandDOB"
+                value={formData.husbandDOB}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full border ${errors.husbandDOB ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+              />
+              {errors.husbandDOB && <p className="text-red-500 text-xs italic">{errors.husbandDOB}</p>}
+            </div>
+            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">جستجو</button>
+          </form>
+        )}
+
+        <button
+          className="mt-4 w-full bg-red-500 text-white p-2 rounded-md"
+          onClick={onClose}
+        >
+          بستن
+        </button>
+      </div>
     </div>
   );
 };
 
-export default CheckFormButton;
+export default CheckForm;
