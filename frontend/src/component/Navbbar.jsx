@@ -34,14 +34,14 @@ const Nav = ({openform}) => {
 
       {/* Menu Section */}
       <nav id="menu" className="basis-1/2 content-center roundedlg:w-auto text-center flex md:grid lg:grid bg-[url('../../../photoes/nekahKhat.jpg')] bg-cover md:pl-4 justify-end m-4 p-4  rounded-lg">
-        <a href="#home" className=" text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2 md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52 h-auto">
+        <a href="#home" className=" bg-white text-black text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2 md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52 h-auto">
           <button id="" onClick={toggleSearchForm}>صفحه اصلی</button>
         </a>
-        <a onClick={openform} href="#form" className="text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
+        <a onClick={openform} href="#form" className=" bg-white text-black text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
           <CheckFormButton onClick={toggleSearchForm}/>
         </a>
         
-        <Link  to="/login" className="text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
+        <Link  to="/login" className=" bg-white text-black text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
           <button id="">دشبورد</button>
         </Link>
       </nav>

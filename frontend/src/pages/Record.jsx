@@ -15,12 +15,12 @@ const Record = () => {
     NIC: "",
     nation: "",
     religion: "",
-    state: "",
+    mode: "",
   };
 
   const [msg_success, setMsg_success] = useState("");
-  const [husbandData, setHusbandData] = useState({ ...initialData, gender: "مرد" });
-  const [wifeData, setWifeData] = useState({ ...initialData, gender: "زن" });
+  const [husbandData, setHusbandData] = useState({ ...initialData, gender: "مرد", mode: "شوهر" });
+  const [wifeData, setWifeData] = useState({ ...initialData, gender: "زن", mode: "خانم" });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -81,8 +81,8 @@ const Record = () => {
         setMsg_success(response.data.message);
 
         // Reset form data after successful submission
-        setHusbandData({ ...initialData, gender: "مرد" });
-        setWifeData({ ...initialData, gender: "زن" });
+        setHusbandData({ ...initialData, gender: "مرد", mode: "شوهر" });
+        setWifeData({ ...initialData, gender: "زن", mode: "خانم" });
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -111,7 +111,7 @@ const Record = () => {
                   {key === "NIC" && "کد ملی"}
                   {key === "nation" && "ملیت"}
                   {key === "religion" && "دین"}
-                  {key === "state" && "استان"}
+                  {key === "mode" && "حالت"}
                 </label>
                 {key === "gender" ? (
                   <select
@@ -121,6 +121,15 @@ const Record = () => {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
                     <option value="مرد">مرد</option>
+                  </select>
+                ) : key === "mode" ? (
+                  <select
+                    name="mode"
+                    value={husbandData[key]}
+                    onChange={(e) => handleChange(e, setHusbandData, husbandData)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  >
+                    <option value="شوهر">شوهر</option>
                   </select>
                 ) : (
                   <input
@@ -152,10 +161,10 @@ const Record = () => {
                   {key === "birthDate" && "تاریخ تولد"}
                   {key === "birthPlace" && "محل تولد"}
                   {key === "residency" && "محل اقامت"}
-                  {key === "NIC" && "کد ملی"}
+                  {key === "NIC" && "نمبر تذکره"}
                   {key === "nation" && "ملیت"}
                   {key === "religion" && "دین"}
-                  {key === "state" && "استان"}
+                  {key === "mode" && "حالت"}
                 </label>
                 {key === "gender" ? (
                   <select
@@ -165,6 +174,15 @@ const Record = () => {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
                     <option value="زن">زن</option>
+                  </select>
+                ) : key === "mode" ? (
+                  <select
+                    name="mode"
+                    value={wifeData[key]}
+                    onChange={(e) => handleChange(e, setWifeData, wifeData)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  >
+                    <option value="خانم">خانم</option>
                   </select>
                 ) : (
                   <input

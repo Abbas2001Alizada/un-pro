@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
+
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +15,11 @@ const LoginPage = () => {
     try {
       const response = await axios.post('http://localhost:8038/users/login', { username, password });
       const userId = response.data.userId;
-      navigate(`/dashboard/${userId}`);
+      const userRole=response.data.userRole;
+      if(userRole==='مدیر'){
+      navigate(`/AdminDashboard/${userId}`)
+    }else{
+      navigate(`/UserDashboard/${userId}`)}
     } catch (error) {
       setError('اعتبارنامه نامعتبر است. لطفا دوباره امتحان کنید.');
     }

@@ -24,7 +24,7 @@ export const authenticateUser = async (req, res) => {
 
   try {
     const user = await User.findOne({
-      attributes: ['id'],
+      attributes: ['id','role'],
       where: { username, password },
     });
 
@@ -32,7 +32,7 @@ export const authenticateUser = async (req, res) => {
       return res.status(404).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ userId: user.id });
+    res.json({ userId: user.id, userRole:user.role });
   } catch (error) {
     console.error('Authentication error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -45,7 +45,7 @@ export const getUserDetails = async (req, res) => {
 
   try {
     const user = await User.findByPk(userId, {
-      attributes: ['name', 'username', 'password', 'email', 'image'],
+      attributes: ['name', 'username', 'password', 'email', 'image','role'],
     });
 
     if (!user) {
@@ -71,8 +71,8 @@ export const getAllUsers = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { name, username, password, image, email } = req.body;
-    const user = await User.create({ name, username, password, image, email });
+    const { name, username, password, image, email, role } = req.body;
+    const user = await User.create({ name, username, password, image, email,role });
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -82,7 +82,7 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
 
-  const { name, username, password, email } = req.body;
+  const { name, username, password, email, } = req.body;
   const image = req.file ? req.file.filename : null;
 
   try {

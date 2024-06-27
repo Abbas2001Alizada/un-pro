@@ -27,6 +27,10 @@ const User = sequelize.define('User', {
         },
         // unique: true,
     },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 }, { // automated password hashing and encription 
     hook: {
         beforeCreate: async (user) => {

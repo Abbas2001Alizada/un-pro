@@ -3,9 +3,12 @@ import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
 import React, { useEffect, useState } from "react";
 import { Link, useMatch, useParams } from "react-router-dom";
+import CreateUser from "./createUser";
+import DeleteUser from "./deleteUser";
+import Report from "./Report";
 
-const Dashboard = () => {
- const match = useMatch('/dashboard/:id');
+const AddminDashboard = () => {
+ const match = useMatch('/AdminDashboard/:id');
   const id = match.params.id;
   const[previewUrl,setPreviewUrl]=useState()
 
@@ -31,7 +34,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-red-900 via-red-700 to-red-400">
       {/* Navbar */}
-      <nav className="bg-red-900 text-white p-4 flex justify-between items-center">
+      <nav className="bg-red-950 text-white p-4 flex justify-between items-center">
         <div className="text-xl font-bold">
           <img src={logo} alt="" />
         </div>
@@ -75,7 +78,7 @@ const Dashboard = () => {
               }`}
               onClick={() => setSelectedOption("today")}
             >
-              لیست امروز
+              ایجاد حساب جدید
             </li>
             <li
               className={`p-2 cursor-pointer mt-2 ${
@@ -83,7 +86,15 @@ const Dashboard = () => {
               }`}
               onClick={() => setSelectedOption("processed")}
             >
-              پردازش شده
+              حذف حساب کاربری
+            </li>
+            <li
+              className={`p-2 cursor-pointer mt-2 ${
+                selectedOption === "report" && "bg-red-600"
+              }`}
+              onClick={() => setSelectedOption("report")}
+            >
+              گزارشات
             </li>
           </ul>
         </aside>
@@ -91,20 +102,23 @@ const Dashboard = () => {
         {/* Main Content */}
         <main className="flex-grow bg-gray-100 p-4">
           {selectedOption === "today" ? (
-            <section>
-              <h2 className="text-xl font-semibold mb-4">لیست امروز</h2>
-              <p>محتوای لیست امروز در اینجا نمایش داده می‌شود.</p>
+            <section className=" dir-rtl">
+              <h2 className="text-xl font-semibold mb-4">ایجاد حساب جدید</h2>
+              <CreateUser/>
             </section>
-          ) : (
+          ) : selectedOption==='processed'?(
             <section>
-              <h2 className="text-xl font-semibold mb-4">پردازش شده</h2>
-              <p>محتوای پردازش شده در اینجا نمایش داده می‌شود.</p>
+              <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
+              <DeleteUser/>
             </section>
-          )}
+          ):(            <section>
+            <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
+            <Report/>
+          </section>)}
         </main>
       </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default AddminDashboard;
