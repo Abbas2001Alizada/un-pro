@@ -68,16 +68,36 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-
+// Controller function to handle user creation
 export const createUser = async (req, res) => {
   try {
-    const { name, username, password, image, email, role } = req.body;
-    const user = await User.create({ name, username, password, image, email,role });
-    res.status(201).json(user);
+    const data = req.body;
+    let imagePath = null;
+
+    // Handle image upload
+    if (req.file) {
+      imagePath = req.file.path;
+    }
+
+
+    // Create a new user record
+    const newUser = await User.create({
+      name:data.name,
+      username:data.username,
+      password:data.password,
+      email:data.email,
+      image: imagePath,
+      role:data.role,
+    });
+
+    // Send success response
+    res.status(201).json({ message: 'User created successfully!', user: newUser });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Error creating user' });
   }
 };
+
 
 
 export const updateUser = async (req, res) => {

@@ -19,6 +19,7 @@ const Record = () => {
   };
 
   const [msg_success, setMsg_success] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const [husbandData, setHusbandData] = useState({ ...initialData, gender: "مرد", mode: "شوهر" });
   const [wifeData, setWifeData] = useState({ ...initialData, gender: "زن", mode: "خانم" });
   const [loading, setLoading] = useState(false);
@@ -79,10 +80,16 @@ const Record = () => {
         const coupleData = { husbandData, wifeData };
         const response = await axios.post("http://localhost:8038/records", coupleData);
         setMsg_success(response.data.message);
+        setModalVisible(true); // Show modal
 
         // Reset form data after successful submission
         setHusbandData({ ...initialData, gender: "مرد", mode: "شوهر" });
         setWifeData({ ...initialData, gender: "زن", mode: "خانم" });
+
+        // Hide modal after 5 seconds
+        setTimeout(() => {
+          setModalVisible(false);
+        }, 5000);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -102,14 +109,15 @@ const Record = () => {
               <div key={key}>
                 <label className="block text-sm font-bold mb-2">
                   {key === "Name" && "نام"}
-                  {key === "lastName" && "نام خانوادگی"}
+                  {key === "lastName" && "تخلص"}
                   {key === "fatherName" && "نام پدر"}
-                  {key === "GfatherName" && "نام پدربزرگ"}
+                  {key === "GfatherName" && "نام پدر کلان"}
+                  {key === "gender" && "جنسیت"}
                   {key === "birthDate" && "تاریخ تولد"}
                   {key === "birthPlace" && "محل تولد"}
-                  {key === "residency" && "محل اقامت"}
-                  {key === "NIC" && "کد ملی"}
-                  {key === "nation" && "ملیت"}
+                  {key === "residency" && "محل سکونت"}
+                  {key === "NIC" && "نمبر تذکره"}
+                  {key === "nation" && "قوم"}
                   {key === "religion" && "دین"}
                   {key === "mode" && "حالت"}
                 </label>
@@ -155,14 +163,15 @@ const Record = () => {
               <div key={key}>
                 <label className="block text-sm font-bold mb-2">
                   {key === "Name" && "نام"}
-                  {key === "lastName" && "نام خانوادگی"}
+                  {key === "lastName" && "تخلص"}
                   {key === "fatherName" && "نام پدر"}
-                  {key === "GfatherName" && "نام پدربزرگ"}
+                  {key === "GfatherName" && "نام پدر کلان"}
+                  {key === "gender" && "جنسیت "}
                   {key === "birthDate" && "تاریخ تولد"}
                   {key === "birthPlace" && "محل تولد"}
-                  {key === "residency" && "محل اقامت"}
+                  {key === "residency" && "محل سکونت"}
                   {key === "NIC" && "نمبر تذکره"}
-                  {key === "nation" && "ملیت"}
+                  {key === "nation" && "قوم"}
                   {key === "religion" && "دین"}
                   {key === "mode" && "حالت"}
                 </label>
@@ -211,9 +220,14 @@ const Record = () => {
           </button>
         </div>
       </form>
-      <div className="mt-6 text-center  text-white py-2 px-4 rounded">
-        {msg_success && <span>{msg_success}</span>}
-      </div>
+
+      {modalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <p className="text-center text-green-600">{"معلومات موفقانه ثبت گردید"}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

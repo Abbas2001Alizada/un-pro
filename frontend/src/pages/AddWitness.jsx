@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const InsertRecord = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    Name: '',
     lastName: '',
     fatherName: '',
     GfatherName: '',
@@ -20,6 +20,7 @@ const InsertRecord = () => {
 
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,7 +30,7 @@ const InsertRecord = () => {
     const newErrors = {};
     const today = new Date().toISOString().split('T')[0];
 
-    if (!formData.name) newErrors.name = 'نام ضروری است';
+    if (!formData.Name) newErrors.Name = 'نام ضروری است';
     if (!formData.lastName) newErrors.lastName = 'تخلص ضروری است';
     if (!formData.fatherName) newErrors.fatherName = 'نام پدر ضروری است';
     if (!formData.GfatherName) newErrors.GfatherName = 'نام پدرکلان ضروری است';
@@ -42,7 +43,7 @@ const InsertRecord = () => {
     if (!formData.religion) newErrors.religion = 'دین ضروری است';
     if (!formData.NIC || !/^[\d-_]+$/.test(formData.NIC)) newErrors.NIC = 'NIC فقط می‌تواند شامل اعداد، خط فاصله و زیرخط باشد';
     if (!formData.district) newErrors.district = 'ولسوالی ضروری است';
-    if (!formData.coupleId) newErrors.coupleId = 'شناسه زوج ضروری است';
+    if (!formData.coupleId || !/^\d+$/.test(formData.coupleId)) newErrors.coupleId = 'شناسه زوج باید فقط شامل اعداد باشد';
     return newErrors;
   };
 
@@ -54,10 +55,16 @@ const InsertRecord = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:8038/record', formData);
+      await axios.post('http://localhost:8038/records/witness', formData);
       setMessage('ریکارد با موفقیت ثبت شد');
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+        setMessage('');
+      }, 5000);
+
       setFormData({
-        name: '',
+        Name: '',
         lastName: '',
         fatherName: '',
         GfatherName: '',
@@ -74,17 +81,29 @@ const InsertRecord = () => {
       setErrors({});
     } catch (error) {
       setMessage('خطا در ثبت ریکارد');
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+        setMessage('');
+      }, 5000);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 p-4 relative">
+      {showMessage && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className={`bg-${message.includes('موفقیت') ? 'green' : 'red'}-500 text-white py-2 px-4 rounded shadow-lg`}>
+            <span>{message}</span>
+          </div>
+        </div>
+      )}
       <form className="w-full max-w-md bg-red-700 p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-4 text-center text-white">ثبت ریکارد</h2>
         {Object.keys(formData).map((field) => (
           <div className="mb-4" key={field}>
             <label className="block text-sm font-bold mb-2 text-white" htmlFor={field}>
-              {field === 'name' && 'نام'}
+              {field === 'Name' && 'نام'}
               {field === 'lastName' && 'تخلص'}
               {field === 'fatherName' && 'نام پدر'}
               {field === 'GfatherName' && 'نام پدرکلان'}
@@ -96,7 +115,7 @@ const InsertRecord = () => {
               {field === 'religion' && 'دین'}
               {field === 'NIC' && 'نمبر تذکره '}
               {field === 'district' && 'ولسوالی'}
-              {field === 'coupleId' && 'شناسه خانواده'}
+              {field === 'coupleId' && 'شماره خانواده'}
             </label>
             {field === 'gender' ? (
               <select
@@ -127,7 +146,7 @@ const InsertRecord = () => {
                 type="text"
                 value={formData[field]}
                 onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors[field] ? 'border-red-500' : ''}`}
               />
             )}
             {errors[field] && <p className="text-black text-xs italic">{errors[field]}</p>}
@@ -142,11 +161,6 @@ const InsertRecord = () => {
           </button>
         </div>
       </form>
-      {message && (
-        <div className={`mt-6 text-center py-2 px-4 rounded ${message.includes('موفقیت') ? 'bg-green-500' : 'bg-red-500'} text-white`}>
-          <span>{message}</span>
-        </div>
-      )}
     </div>
   );
 };

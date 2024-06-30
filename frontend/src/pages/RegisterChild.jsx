@@ -4,7 +4,7 @@ import axios from "axios";
 
 const RegisterChild = () => {
   const initialData = {
-    name: "",
+    Name: "",
     lastName: "",
     gender: "",
     birthDate: "",
@@ -16,13 +16,14 @@ const RegisterChild = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [msgSuccess, setMsgSuccess] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const validateField = (name, value) => {
     let errorMsg = "";
 
     if (value.trim() === "") {
       errorMsg = "این فیلد نباید خالی باشد";
-    } else if (["name", "lastName"].includes(name) && /\d/.test(value)) {
+    } else if (["Name", "lastName"].includes(name) && /\d/.test(value)) {
       errorMsg = "این فیلد نباید حاوی عدد باشد";
     } else if (name === "parentId" && !/^\d+$/.test(value)) {
       errorMsg = "این فیلد باید فقط شامل اعداد باشد";
@@ -62,10 +63,16 @@ const RegisterChild = () => {
 
       try {
         const response = await axios.post("http://localhost:8038/children", formData);
-        setMsgSuccess(response.data.message);
+        setMsgSuccess("فرزند با موفقیت ثبت شد");
+        setModalVisible(true); // Show modal
 
         // Reset form data after successful submission
         setFormData(initialData);
+
+        // Hide modal after 5 seconds
+        setTimeout(() => {
+          setModalVisible(false);
+        }, 5000);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -83,8 +90,8 @@ const RegisterChild = () => {
           {Object.keys(initialData).map((key) => (
             <div key={key}>
               <label className="block text-sm font-bold mb-2">
-                {key === "name" && "نام"}
-                {key === "lastName" && "نام خانوادگی"}
+                {key === "Name" && "نام"}
+                {key === "lastName" && "تخلص"}
                 {key === "gender" && "جنسیت"}
                 {key === "birthDate" && "تاریخ تولد"}
                 {key === "birthPlace" && "محل تولد"}
@@ -126,9 +133,14 @@ const RegisterChild = () => {
           </button>
         </div>
       </form>
-      <div className="mt-6 text-center text-white py-2 px-4 rounded">
-        {msgSuccess && <span>{msgSuccess}</span>}
-      </div>
+
+      {modalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <p className="text-center text-green-600">{msgSuccess}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

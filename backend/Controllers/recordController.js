@@ -21,7 +21,7 @@ export async function processUsersDaily() {
       return;
     }
 
-    const pendingAppointments = await appointment.findAll({
+    const pendingAppointments = await Appointment.findAll({
       where: {
         state: "pending",
       },
@@ -87,6 +87,57 @@ export const getRecordById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+//inserting record of witness
+
+export const insertRecord = async (req, res) => {
+  const {
+    Name,
+    lastName,
+    fatherName,
+    GfatherName,
+    gender,
+    birthDate,
+    birthPlace,
+    residency,
+    NIC,
+    nation,
+    religion,
+    coupleId,
+    district
+  } = req.body;
+
+  try {
+    const newRecord = await records.create({
+      Name,
+      lastName,
+      fatherName,
+      GfatherName,
+      gender,
+      birthDate,
+      birthPlace,
+      residency,
+      NIC,
+      nation,
+      religion,
+      coupleId,
+      district,
+      mode:'شاهد'
+    });
+    
+    res.status(201).json({
+      message: 'Record created successfully',
+      data: newRecord
+    });
+  } catch (error) {
+    console.error('Error inserting record:', error);
+    res.status(500).json({
+      message: 'Error creating record',
+      error: error.message
+    });
+  }
+};
+
+
 //create a new record
 export const createRecord = async (req, res) => {
   try {
@@ -113,7 +164,7 @@ export const createRecord = async (req, res) => {
           NIC: husbandData.NIC,
           nation: husbandData.nation,
           religion: husbandData.religion,
-          state: husbandData.state,
+          mode: husbandData.mode,
           coupleId: family_id,
         },
         { transaction: t }
@@ -131,7 +182,7 @@ export const createRecord = async (req, res) => {
           NIC: wifeData.NIC,
           nation: wifeData.nation,
           religion: wifeData.religion,
-          state: wifeData.state,
+          mode: wifeData.mode,
           coupleId: family_id,
         },
         { transaction: t }
@@ -160,7 +211,7 @@ export const updateRecord = async (req, res) => {
       NIC,
       nation,
       religion,
-      state,
+      mode,
       coupleId,
     } = req.body;
     const [updated] = await records.update(
@@ -176,7 +227,7 @@ export const updateRecord = async (req, res) => {
         NIC,
         nation,
         religion,
-        state,
+        mode,
         coupleId,
       },
       {

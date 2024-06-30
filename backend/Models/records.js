@@ -14,7 +14,7 @@ const records = sequelize.define('records', {
     NIC: { type: DataTypes.STRING, allowNull: false },
     nation: { type: DataTypes.STRING, allowNull: false },
     religion: { type: DataTypes.STRING, allowNull: false },
-    state: { type: DataTypes.STRING, allowNull: false },
+    mode: { type: DataTypes.STRING, allowNull: false },
     coupleId: {
         type: DataTypes.STRING, allowNull: false,
 

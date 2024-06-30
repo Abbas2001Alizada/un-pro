@@ -3,7 +3,7 @@ import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
 import React, { useEffect, useState } from "react";
 import { Link, useMatch, useParams } from "react-router-dom";
-import CreateUser from "./createUser";
+import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import Report from "./Report";
 
@@ -104,7 +104,7 @@ const AddminDashboard = () => {
           {selectedOption === "today" ? (
             <section className=" dir-rtl">
               <h2 className="text-xl font-semibold mb-4">ایجاد حساب جدید</h2>
-              <CreateUser/>
+              <RegisterUser/>
             </section>
           ) : selectedOption==='processed'?(
             <section>

@@ -3,7 +3,7 @@ import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
 import React, { useEffect, useState } from "react";
 import { Link, useMatch, useParams } from "react-router-dom";
-import CreateUser from "./createUser";
+import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import Report from "./Report";
 import AddWitness from "./AddWitness";
@@ -20,7 +20,7 @@ const AddminDashboard = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`http://localhost:8038/users/${id}`);
-        const { name, username, email, image } = response.data;
+        const { name, username,password, email, image,role } = response.data;
         setPreviewUrl(`http://localhost:8038/uploads/${image}`);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -32,7 +32,7 @@ const AddminDashboard = () => {
  
 
  
-  const [selectedOption, setSelectedOption] = useState("today");
+  const [selectedOption, setSelectedOption] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
@@ -81,9 +81,7 @@ const AddminDashboard = () => {
                 selectedOption === "Checking" && "bg-red-600"
               }`}
               onClick={() => setSelectedOption("Checking")}
-            >
-                <CheckFormButton/>
-             
+            ><CheckFormButton />
             </li>
             <li
               className={`p-2 cursor-pointer mt-2 ${
@@ -106,20 +104,22 @@ const AddminDashboard = () => {
 
         {/* Main Content */}
         <main className="flex-grow bg-gray-100 p-4">
-          {selectedOption === "" ? (
+          {selectedOption === "Checking" ? (
             <section className=" dir-rtl">
               <h2 className="text-xl font-semibold mb-4">بررسی نوبت</h2>
-             
+            
             </section>
           ) : selectedOption==='AddWitness'?(
             <section>
               <h2 className="text-xl font-semibold mb-4">اضافه نمودن شاهد</h2>
               <AddWitness/>
             </section>
-          ):(            <section>
+          ):selectedOption==='AddChild'?(            <section>
             <h2 className="text-xl font-semibold mb-4">اضافه نمودن فرزند </h2>
             <RegisterChild/>
-          </section>)}
+          </section>):
+          (<section>
+        </section>)}
         </main>
       </div>
     </div>
