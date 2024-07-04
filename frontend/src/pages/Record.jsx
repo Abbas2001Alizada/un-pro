@@ -18,6 +18,7 @@ const Record = () => {
     mode: "",
   };
 
+  const [familyCode, setFamilyCode] = useState("");
   const [msg_success, setMsg_success] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [husbandData, setHusbandData] = useState({ ...initialData, gender: "مرد", mode: "شوهر" });
@@ -80,16 +81,12 @@ const Record = () => {
         const coupleData = { husbandData, wifeData };
         const response = await axios.post("http://localhost:8038/records", coupleData);
         setMsg_success(response.data.message);
-        setModalVisible(true); // Show modal
+        setModalVisible(true);
+        setFamilyCode(response.data.familyCode);
 
         // Reset form data after successful submission
         setHusbandData({ ...initialData, gender: "مرد", mode: "شوهر" });
         setWifeData({ ...initialData, gender: "زن", mode: "خانم" });
-
-        // Hide modal after 5 seconds
-        setTimeout(() => {
-          setModalVisible(false);
-        }, 5000);
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -166,7 +163,7 @@ const Record = () => {
                   {key === "lastName" && "تخلص"}
                   {key === "fatherName" && "نام پدر"}
                   {key === "GfatherName" && "نام پدر کلان"}
-                  {key === "gender" && "جنسیت "}
+                  {key === "gender" && "جنسیت"}
                   {key === "birthDate" && "تاریخ تولد"}
                   {key === "birthPlace" && "محل تولد"}
                   {key === "residency" && "محل سکونت"}
@@ -224,7 +221,7 @@ const Record = () => {
       {modalVisible && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <p className="text-center text-green-600">{"معلومات موفقانه ثبت گردید"}</p>
+            <p className="text-center text-green-600">{`معلومات موفقانه ثبت گردید. این کود نمبر را یادداشت نمایید تا در هنگام جستجو به آسانی نوبت خود را بررسی بتوانید ${familyCode}`}</p>
           </div>
         </div>
       )}

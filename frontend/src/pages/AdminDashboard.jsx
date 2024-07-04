@@ -6,6 +6,7 @@ import { Link, useMatch, useParams } from "react-router-dom";
 import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import Report from "./Report";
+import CreateAppointment from "./CreateAppointment";
 
 const AddminDashboard = () => {
  const match = useMatch('/AdminDashboard/:id');
@@ -72,19 +73,27 @@ const AddminDashboard = () => {
         {/* Sidebar */}
         <aside className="bg-red-700 text-white w-1/4 p-4">
           <ul>
+          <li
+              className={`p-2 cursor-pointer ${
+                selectedOption === "CreateAppointment" && "bg-red-600"
+              }`}
+              onClick={() => setSelectedOption("CreateAppointment")}
+            >
+              نوبت دهی 
+            </li>
             <li
               className={`p-2 cursor-pointer ${
-                selectedOption === "today" && "bg-red-600"
+                selectedOption === "CreateAccount" && "bg-red-600"
               }`}
-              onClick={() => setSelectedOption("today")}
+              onClick={() => setSelectedOption("CreateAccount")}
             >
               ایجاد حساب جدید
             </li>
             <li
               className={`p-2 cursor-pointer mt-2 ${
-                selectedOption === "processed" && "bg-red-600"
+                selectedOption === "DeleteAccount" && "bg-red-600"
               }`}
-              onClick={() => setSelectedOption("processed")}
+              onClick={() => setSelectedOption("DeleteAccount")}
             >
               حذف حساب کاربری
             </li>
@@ -101,15 +110,20 @@ const AddminDashboard = () => {
 
         {/* Main Content */}
         <main className="flex-grow bg-gray-100 p-4">
-          {selectedOption === "today" ? (
+          {selectedOption === "CreateAccount" ? (
             <section className=" dir-rtl">
               <h2 className="text-xl font-semibold mb-4">ایجاد حساب جدید</h2>
               <RegisterUser/>
             </section>
-          ) : selectedOption==='processed'?(
+          ) : selectedOption==='DeleteAccount'?(
             <section>
               <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
               <DeleteUser/>
+            </section>
+          ) :selectedOption==='CreateAppointment'?(
+            <section>
+              <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
+              <CreateAppointment/>
             </section>
           ):(            <section>
             <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>

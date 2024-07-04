@@ -125,7 +125,7 @@ export const insertRecord = async (req, res) => {
     });
     
     res.status(201).json({
-      message: 'Record created successfully',
+      message: `Record created successfully by id`,
       data: newRecord
     });
   } catch (error) {
@@ -149,6 +149,8 @@ export const createRecord = async (req, res) => {
       state: "pending",
     });
     let family_id = appointment.id;
+    let familyCode=appointment.familyCode;
+
 
     sequelize.transaction(async (t) => {
       await records.create(
@@ -189,7 +191,7 @@ export const createRecord = async (req, res) => {
       );
     });
 
-    res.status(201).json({"message":'Record has been submmited successfully'});
+    res.status(201).json({familyCode:familyCode});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

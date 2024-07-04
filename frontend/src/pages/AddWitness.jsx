@@ -14,7 +14,6 @@ const InsertRecord = () => {
     nation: '',
     religion: '',
     NIC: '',
-    district: '',
     coupleId: ''
   });
 
@@ -39,11 +38,10 @@ const InsertRecord = () => {
     else if (formData.birthDate > today) newErrors.birthDate = 'تاریخ تولد نمی‌تواند بعد از امروز باشد';
     if (!formData.birthPlace) newErrors.birthPlace = 'محل تولد ضروری است';
     if (!formData.residency) newErrors.residency = 'محل سکونت ضروری است';
-    if (!formData.nation) newErrors.nation = 'ملیت ضروری است';
+    if (!formData.nation) newErrors.nation = 'قوم ضروری است';
     if (!formData.religion) newErrors.religion = 'دین ضروری است';
     if (!formData.NIC || !/^[\d-_]+$/.test(formData.NIC)) newErrors.NIC = 'NIC فقط می‌تواند شامل اعداد، خط فاصله و زیرخط باشد';
-    if (!formData.district) newErrors.district = 'ولسوالی ضروری است';
-    if (!formData.coupleId || !/^\d+$/.test(formData.coupleId)) newErrors.coupleId = 'شناسه زوج باید فقط شامل اعداد باشد';
+    if (!formData.coupleId || !/^\d+$/.test(formData.coupleId)) newErrors.coupleId = 'شماره خانواده  باید فقط شامل اعداد باشد';
     return newErrors;
   };
 
@@ -75,7 +73,6 @@ const InsertRecord = () => {
         nation: '',
         religion: '',
         NIC: '',
-        district: '',
         coupleId: ''
       });
       setErrors({});
@@ -99,7 +96,7 @@ const InsertRecord = () => {
         </div>
       )}
       <form className="w-full max-w-md bg-red-700 p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
-        <h2 className="text-2xl mb-4 text-center text-white">ثبت ریکارد</h2>
+        <h2 className="text-2xl mb-4 text-center text-white">ثبت شاهد</h2>
         {Object.keys(formData).map((field) => (
           <div className="mb-4" key={field}>
             <label className="block text-sm font-bold mb-2 text-white" htmlFor={field}>
@@ -111,10 +108,9 @@ const InsertRecord = () => {
               {field === 'birthDate' && 'تاریخ تولد'}
               {field === 'birthPlace' && 'محل تولد'}
               {field === 'residency' && 'محل سکونت'}
-              {field === 'nation' && 'ملیت'}
+              {field === 'nation' && 'قوم'}
               {field === 'religion' && 'دین'}
               {field === 'NIC' && 'نمبر تذکره '}
-              {field === 'district' && 'ولسوالی'}
               {field === 'coupleId' && 'شماره خانواده'}
             </label>
             {field === 'gender' ? (

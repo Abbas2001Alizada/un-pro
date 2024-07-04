@@ -6,7 +6,7 @@ const appointment = sequelize.define('appointment', {
     // Define attributes (columns)
 
     appointmentTime: {
-        type: DataTypes.STRING,
+        type: DataTypes.DATE,
         allowNull: true
     },
     familyCode: {

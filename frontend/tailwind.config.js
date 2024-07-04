@@ -5,6 +5,53 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    extend: {
+      fontFamily: {
+        "farsi": ["persian", "monospace"],
+        "ANSI": ["ANSI"]
+      }, animation: {
+        'ping-center': 'ping-center 1s infinite',
+        'spin-slow': 'spin 10s linear infinite',
+      },
+      keyframes: {
+
+        'ping-center': {
+          '0%': { transform: 'scale(1)', opacity: 1 },
+          '100%': { transform: 'scale(3)', opacity: 0 },
+        },
+        "spin": {
+          from: { transform: 'rotate(0deg) scale(3)' },
+          to: { transform: 'rotate(90deg) scale(2)' },
+        },
+
+        '50%': {
+          'background-size': '200% 200%',
+          'background-position': 'right center',
+        },
+
+        'gradient-y': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'top center',
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'bottom center',
+          },
+        },
+        'gradient-xy': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left top',
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right bottom',
+          },
+        },
+      },
+    },
+
     screens: {
       "sm": "340px",
       "md": "620px",
@@ -12,18 +59,8 @@ export default {
       "xl": "1208px"
 
     },
-    extend: {
-      fontFamily: {
-        "farsi": ["persian", "monospace"],
-        "ANSI": ["ANSI"]
-      },
 
-      // regular:"Akshar",
-      // Url("./fonts/akshar.ttf"),
-      // "Akshar":"Akshar"
-    // }
   },
-},
-plugins: [],
+  plugins: [],
 }
 

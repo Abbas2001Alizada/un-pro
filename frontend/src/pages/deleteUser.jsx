@@ -2,35 +2,49 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const DeleteUser = () => {
-  const [username, setUsername] = useState('');
+  const [id, setId] = useState('');
   const [message, setMessage] = useState('');
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const handleChange = (e) => {
-    setUsername(e.target.value);
+    setId(e.target.value);
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
-      await axios.delete(`http://localhost:8038/user/${username}`);
+      await axios.delete(`http://localhost:8038/users/${id}`);
       setMessage('کاربر با موفقیت حذف شد');
-      setUsername('');
+      setId('');
+      setIsPopupVisible(true);
+      setTimeout(() => {
+        setIsPopupVisible(false);
+        setMessage('');
+      }, 5000); // Clear message after 5 seconds
     } catch (error) {
       setMessage('خطا در حذف کاربر: ' + error.message);
+      setIsPopupVisible(true);
+      setTimeout(() => {
+        setIsPopupVisible(false);
+        setMessage('');
+      }, 5000); // Clear message after 5 seconds
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 p-4">
-      <form className="w-full max-w-md bg-red-800 p-6 rounded-lg shadow-md" onSubmit={handleDelete}>
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-red-950 p-4">
+      {isPopupVisible && (
+        <div className="fixed inset-0 bg-black opacity-50 z-10"></div>
+      )}
+      <form className={`w-full max-w-md bg-red-800 p-6 rounded-lg shadow-md ${isPopupVisible ? 'z-0' : 'z-20'}`} onSubmit={handleDelete}>
         <h2 className="text-2xl mb-4 text-center text-white">حذف کاربر</h2>
         <div className="mb-4">
           <label className="block text-sm font-bold mb-2 text-white" htmlFor="username">شماره کاربر</label>
           <input
-            id="username"
+            id="id"
             type="text"
-            name="username"
-            value={username}
+            name="id"
+            value={id}
             onChange={handleChange}
             aria-label="شماره کاربر"
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -47,8 +61,10 @@ const DeleteUser = () => {
         </div>
       </form>
       {message && (
-        <div className={`mt-6 text-center py-2 px-4 rounded ${message.includes('موفقیت') ? 'bg-green-500' : 'bg-red-500'} text-white`}>
-          <span>{message}</span>
+        <div className="fixed inset-0 flex items-center justify-center z-20">
+          <div className={`bg-white py-2 px-4 rounded shadow-lg ${message.includes('موفقیت') ? 'text-green-600' : 'text-red-600'}`}>
+            <span>{message}</span>
+          </div>
         </div>
       )}
     </div>

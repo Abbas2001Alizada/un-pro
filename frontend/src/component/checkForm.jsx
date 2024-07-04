@@ -1,41 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 const CheckForm = ({ onClose }) => {
-  const [searchType, setSearchType] = useState('specification');
+  const [searchType, setSearchType] = useState("specification");
   const [formData, setFormData] = useState({
-    husbandName: '',
-    husbandNIC: '',
-    familyID: '',
-    husbandDOB: '',
+    husbandName: "",
+    husbandNIC: "",
+    familyID: "",
+    husbandDOB: "",
   });
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
 
     // Reset errors when user starts typing
     if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+      setErrors((prevState) => ({ ...prevState, [name]: "" }));
     }
   };
 
   const validateForm = () => {
-    let validationErrors = {};
+    const validationErrors = {};
 
-    if (searchType === 'specification') {
+    if (searchType === "specification") {
       if (!formData.husbandName) {
-        validationErrors.husbandName = 'نام زوج نمیتواند خالی باشد';
+        validationErrors.husbandName = "نام زوج نمیتواند خالی باشد";
       }
       if (!formData.husbandNIC) {
-        validationErrors.husbandNIC = 'نمبر تذکره زوج نمیتواند خالی باشد';
+        validationErrors.husbandNIC = "نمبر تذکره زوج نمیتواند خالی باشد";
       }
-    } else if (searchType === 'id') {
+    } else if (searchType === "id") {
       if (!formData.familyID) {
-        validationErrors.familyID = 'کود خانواده نمیتواند خالی باشد';
+        validationErrors.familyID = "کود خانواده نمیتواند خالی باشد";
       }
       if (!formData.husbandDOB) {
-        validationErrors.husbandDOB = 'تاریخ تولد زوج نمیتواند خالی باشد';
+        validationErrors.husbandDOB = "تاریخ تولد زوج نمیتواند خالی باشد";
       }
     }
 
@@ -44,12 +46,42 @@ const CheckForm = ({ onClose }) => {
     return Object.keys(validationErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Form submission logic
-      console.log('Form submitted:', formData);
+      try {
+        let response;
+        if (searchType === "specification") {
+          // Searching by husband name and NIC
+          const specification = {
+            mode: "شوهر",
+            name: formData.husbandName,
+            NIC: formData.husbandNIC,
+          };
+          response = await axios.post(
+            "http://localhost:8038/appointment",
+            specification
+          );
+        } else if (searchType === "id") {
+          // Searching by family ID
+         const familyCode={ familyCode: formData.familyID}
+            (response = await axios.post(
+              "http://localhost:8038/appointment",familyCode
+            ));
+        }
+
+        // Check response state and redirect accordingly
+        if (response.data.state === "pending") {
+          Navigate("/pending-appointment");
+        } else if (response.data.state === "processing") {
+          Navigate("/processing-appointment", {
+            appointmentTime: response.data.appointmentTime,
+          });
+        }
+      } catch (error) {
+        console.error("Error checking appointment:", error);
+      }
     }
   };
 
@@ -58,20 +90,28 @@ const CheckForm = ({ onClose }) => {
       <div className="bg-red-950 rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between mb-4">
           <button
-            className={`px-4 py-2 ${searchType === 'specification' ? 'bg-blue-500 border-2 border-green-300 rounded text-white' : 'bg-gray-200'} rounded`}
-            onClick={() => setSearchType('specification')}
+            className={`px-4 py-2 ${
+              searchType === "specification"
+                ? "bg-blue-500 border-2 border-green-300 rounded text-white"
+                : "bg-gray-200"
+            } rounded`}
+            onClick={() => setSearchType("specification")}
           >
             جستجو براساس مشخصات
           </button>
           <button
-            className={`px-4 py-2 ${searchType === 'id' ? 'bg-blue-500 border-2 border-green-300 rounded text-white' : 'bg-gray-200'} rounded`}
-            onClick={() => setSearchType('id')}
+            className={`px-4 py-2 ${
+              searchType === "id"
+                ? "bg-blue-500 border-2 border-green-300 rounded text-white"
+                : "bg-gray-200"
+            } rounded`}
+            onClick={() => setSearchType("id")}
           >
             جستجو براساس شناسه
           </button>
         </div>
 
-        {searchType === 'specification' ? (
+        {searchType === "specification" ? (
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-white">نام زوج</label>
@@ -80,9 +120,15 @@ const CheckForm = ({ onClose }) => {
                 name="husbandName"
                 value={formData.husbandName}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border ${errors.husbandName ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+                className={`mt-1 block w-full border ${
+                  errors.husbandName ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
-              {errors.husbandName && <p className="text-red-500 text-xs italic">{errors.husbandName}</p>}
+              {errors.husbandName && (
+                <p className="text-red-500 text-xs italic">
+                  {errors.husbandName}
+                </p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block text-white">نمبر تذکره زوج</label>
@@ -91,11 +137,22 @@ const CheckForm = ({ onClose }) => {
                 name="husbandNIC"
                 value={formData.husbandNIC}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border ${errors.husbandNIC ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+                className={`mt-1 block w-full border ${
+                  errors.husbandNIC ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
-              {errors.husbandNIC && <p className="text-red-500 text-xs italic">{errors.husbandNIC}</p>}
+              {errors.husbandNIC && (
+                <p className="text-red-500 text-xs italic">
+                  {errors.husbandNIC}
+                </p>
+              )}
             </div>
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">جستجو</button>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded-md"
+            >
+              جستجو
+            </button>
           </form>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -106,9 +163,13 @@ const CheckForm = ({ onClose }) => {
                 name="familyID"
                 value={formData.familyID}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border ${errors.familyID ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+                className={`mt-1 block w-full border ${
+                  errors.familyID ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
-              {errors.familyID && <p className="text-red-500 text-xs italic">{errors.familyID}</p>}
+              {errors.familyID && (
+                <p className="text-red-500 text-xs italic">{errors.familyID}</p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block text-white">تاریخ تولد زوج</label>
@@ -117,11 +178,22 @@ const CheckForm = ({ onClose }) => {
                 name="husbandDOB"
                 value={formData.husbandDOB}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border ${errors.husbandDOB ? 'border-red-500' : 'border-gray-300'} rounded-md p-2`}
+                className={`mt-1 block w-full border ${
+                  errors.husbandDOB ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
-              {errors.husbandDOB && <p className="text-red-500 text-xs italic">{errors.husbandDOB}</p>}
+              {errors.husbandDOB && (
+                <p className="text-red-500 text-xs italic">
+                  {errors.husbandDOB}
+                </p>
+              )}
             </div>
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">جستجو</button>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded-md"
+            >
+              جستجو
+            </button>
           </form>
         )}
 

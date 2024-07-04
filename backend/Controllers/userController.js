@@ -1,21 +1,6 @@
 import User from "../Models/user.js";
-import upload from "../middleware/upload.js";
 import fs from 'fs'
-
-
-
-// export const uploadUserImage = async (req, res) => {
-//   try {
-//     const { name, username, email, password } = req.body;
-//     const image = req.file.buffer;
-//     await User.create({ name, username, email, password, image });
-//     res.json({ "message": 'Image uploaded...' });
-//   } catch (err) {
-//     res.status(500).json(err.message);
-//   }
-// };
-
-
+import bcrypt from 'bcrypt';
 
 
 // Authenticate user based on username and password
@@ -23,19 +8,73 @@ export const authenticateUser = async (req, res) => {
   const { username, password } = req.body;
 
   try {
+    // Find the user by username
     const user = await User.findOne({
-      attributes: ['id','role'],
-      where: { username, password },
+      attributes: ['id', 'password', 'role'],
+      where: { username },
     });
 
+    // If user not found, return an error
     if (!user) {
-      return res.status(404).json({ error: 'Invalid credentials' });
+      return res.status(404).json({ error: 'اطلاعات ورود نامعتبر است' });
     }
 
-    res.json({ userId: user.id, userRole:user.role });
+    // Compare the provided password with the stored hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    // If the password is invalid, return an error
+    if (!isPasswordValid) {
+      return res.status(404).json({ error: 'اطلاعات ورود نامعتبر است' });
+    }
+
+    // If authentication is successful, return the user ID and role
+    res.json({ userId: user.id, userRole: user.role });
   } catch (error) {
-    console.error('Authentication error:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('خطا در احراز هویت:', error);
+    res.status(500).json({ error: 'خطای سرور' });
+  }
+};
+// Controller function to create a new user
+export const createUser = async (req, res) => {
+  const {name, username, password, email, role } = req.body;
+
+  // Basic validation
+  if (!name || !username || !password || !email || !role) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  }
+
+  if (role !== 'کاربر' && role !== 'مدیر') {
+    return res.status(400).json({ error: 'Role must be either user or admin' });
+  }
+
+  try {
+    // Check if username already exists
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 6);
+
+    // Create the new user record
+    const newUser = await User.create({
+      name,
+      username,
+      password: hashedPassword,
+      email,
+      role
+    });
+
+    // Send success response
+    res.status(201).json({ message: 'User created successfully!', user: newUser });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'An error occurred while creating the user' });
   }
 };
 
@@ -67,37 +106,6 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// Controller function to handle user creation
-export const createUser = async (req, res) => {
-  try {
-    const data = req.body;
-    let imagePath = null;
-
-    // Handle image upload
-    if (req.file) {
-      imagePath = req.file.path;
-    }
-
-
-    // Create a new user record
-    const newUser = await User.create({
-      name:data.name,
-      username:data.username,
-      password:data.password,
-      email:data.email,
-      image: imagePath,
-      role:data.role,
-    });
-
-    // Send success response
-    res.status(201).json({ message: 'User created successfully!', user: newUser });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Error creating user' });
-  }
-};
-
 
 
 export const updateUser = async (req, res) => {
