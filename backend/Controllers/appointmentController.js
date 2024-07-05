@@ -1,13 +1,80 @@
 import Appointment from '../Models/appointment.js';
-import records from '../Models/records.js'
-import { Op } from 'sequelize';
+import records from '../Models/records.js';
 
+// Controller function to handle appointment search by name, mode, and NIC
+export const searchBySpecification = async (req, res) => {
+  const { name, mode, NIC } = req.body;
+
+  try {
+    // Find the record in the records table
+    const record = await records.findOne({
+      where: {
+        name,
+        mode,
+        NIC
+      },
+      attributes: ['id']
+    });
+
+    if (!record) {
+      return res.status(404).json({ message: 'Record not found' });
+    }
+
+    // Find the appointment using the retrieved id
+    const appointment = await Appointment.findOne({
+      where: { id: record.id },
+      attributes: ['state', 'appointmentTime']
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    return res.json({
+      state: appointment.state,
+      appointmentTime: appointment.appointmentTime
+    });
+  } catch (error) {
+    console.error('Error fetching appointment by specification:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export const checkAppointment = async (req, res) => {
+  try {
+    const { searchType, familyCode, husbandName, husbandNIC, mode } = req.body;
+
+    let appointment;
+
+    if (searchType === 'familyCode') {
+      appointment = await getAppointmentByFamilyCode(familyCode);
+    } else if (searchType === 'specification') {
+      const recordId = await getRecordIdByHusbandDetails(husbandName, husbandNIC, mode);
+      if (recordId) {
+        appointment = await getAppointmentById(recordId);
+      }
+    }
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    if (appointment.state === 'pending') {
+      res.json({ redirectTo: '/pending-appointment' });
+    } else if (appointment.state === 'processing') {
+      res.json({ redirectTo: '/processing-appointment', appointmentTime: appointment.appointmentTime });
+    }
+  } catch (error) {
+    console.error('Error checking appointment:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 export const createAppointment = (req, res) => {
 
 }
-
 
 export const getAllAppointments = async (req, res) => {
   try {
@@ -17,43 +84,28 @@ export const getAllAppointments = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Controller function to handle appointment search by family code
+export const searchByFamilyCode = async (req, res) => {
+  const { familyCode } = req.body;
 
-// Controller function to handle searching appointments based on criteria
-const searchAppointments = async (req, res) => {
   try {
-    const { familyCode, specification} = req.body;
-
-    let appointment;
-
-    if (specification) {
-      appointment = await records.findOne({ name: specification.name, NIC: specification.NIC });
-    } else {
-      appointment = await Appointment.findOne({ familyCode });
-    }
-
+    const appointment = await Appointment.findOne({
+      where: { familyCode },
+      attributes: ['state', 'appointmentTime'],
+    });
     if (!appointment) {
-      return res.status(404).json({ error: 'Appointment not found' });
+      return res.status(404).json({ massage: "not found" });
     }
 
-    // Mock response for demonstration
-    let redirectPath = '';
-    if (appointment.state === 'pending') {
-      redirectPath = '/pending-appointment';
-    } else if (appointment.state === 'processing') {
-      redirectPath = '/processing-appointment';
-    }
-
-    res.status(200).json({ redirectPath, appointmentTime: appointment.appointmentTime });
+    return res.json({
+      state: appointment.state,
+      appointmentTime: appointment.appointmentTime,
+    });
   } catch (error) {
-    console.error('Error searching appointment:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error fetching appointment by family code:', error);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
-
-export default searchAppointments;
-
-
-
 export const updateAppointments = async (req, res) => {
   const { amount } = req.body;
 
@@ -75,7 +127,7 @@ export const updateAppointments = async (req, res) => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 2); // Day after tomorrow
 
-    const updatePromises = appointments.map(appointment => 
+    const updatePromises = appointments.map(appointment =>
       appointment.update({
         appointmentTime: tomorrow,
         state: 'processing'
@@ -90,8 +142,6 @@ export const updateAppointments = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while updating appointments' });
   }
 };
-
-
 export const deleteAppointment = async (req, res) => {
   try {
     const { id } = req.params;

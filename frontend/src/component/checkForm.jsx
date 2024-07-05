@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CheckForm = ({ onClose }) => {
   const [searchType, setSearchType] = useState("specification");
@@ -11,6 +11,7 @@ const CheckForm = ({ onClose }) => {
     husbandDOB: "",
   });
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -65,19 +66,20 @@ const CheckForm = ({ onClose }) => {
           );
         } else if (searchType === "id") {
           // Searching by family ID
-         const familyCode={ familyCode: formData.familyID}
-            (response = await axios.post(
-              "http://localhost:8038/appointment",familyCode
-            ));
+          const familyCode = { familyCode: formData.familyID };
+          response = await axios.post(
+            "http://localhost:8038/appointment",
+            familyCode
+          );
         }
 
         // Check response state and redirect accordingly
-        if (response.data.state === "pending") {
-          Navigate("/pending-appointment");
-        } else if (response.data.state === "processing") {
-          Navigate("/processing-appointment", {
-            appointmentTime: response.data.appointmentTime,
+        if (response.data.redirectPath) {
+          navigate(response.data.redirectPath, {
+            state: response.data.appointmentTime ? { appointmentTime: response.data.appointmentTime } : {},
           });
+        } else {
+          console.error("Error: Appointment not found or invalid state");
         }
       } catch (error) {
         console.error("Error checking appointment:", error);

@@ -9,6 +9,8 @@ import Record from "./pages/Record.jsx";
 import Profilepage from "./pages/Profilepage.jsx";
 import AddminDashboard from "./pages/AdminDashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
+import PendingAppointment from "./component/pendingAppointment.jsx";
+import ProcessingAppointment from "./component/processingAppointment.jsx";
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
           <Route path="/AdminDashboard/:id" element={<AddminDashboard />} />
           <Route path="/UserDashboard/:id" element={<UserDashboard />} />
           <Route path="/" element={<DefaultLayout />} />
+          <Route path="/pending" element={<PendingAppointment />} />
+          <Route path="/processing" element={<ProcessingAppointment />} />
           <Route path="/profile/*" element={<Profilepage />} />
           <Route path="/child/registeration" element={<RegisterChild />} />
         </Routes>

@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { getAllAppointments, createAppointment, deleteAppointment, checkAppointment, updateAppointments } from '../Controllers/appointmentController.js';
+import { getAllAppointments, deleteAppointment, updateAppointments, searchByFamilyCode, searchBySpecification, } from '../Controllers/appointmentController.js';
 
 const router = Router();
 
-// Define routes
 router.get('/', getAllAppointments);
-router.get('/:id', checkAppointment);
-router.post('/', createAppointment);
 router.post('/update', updateAppointments);
+router.post('/searchByFamilyCode', searchByFamilyCode);
+router.post('/searchBySpecification', searchBySpecification);
+// router.post('/searchBySpecification', searchBySpecification);
 router.delete('/:id', deleteAppointment);
 
 export default router;

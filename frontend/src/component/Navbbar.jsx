@@ -3,6 +3,7 @@ import logo from "../../public/photoes/logo.png";
 import { useState } from "react";
 import CheckFormButton from "./checkformbutton";
 import { Link } from "react-router-dom";
+import SearchAppointments from "./Search";
 
 
 const Nav = ({openform}) => {
@@ -38,7 +39,7 @@ const Nav = ({openform}) => {
           <button id="" onClick={toggleSearchForm}>صفحه اصلی</button>
         </a>
         <a onClick={openform} href="#form" className=" bg-white text-black text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
-          <CheckFormButton onClick={toggleSearchForm}/>
+          <SearchAppointments/>
         </a>
         
         <Link  to="/login" className=" bg-white text-black text-lg md:text-xl lg:text-2xl justify-around py-2 pr-2  md:bg-white lg:bg-white md:text-green-800 lg:text-green-800  m-1 rounded text-end w-52">
