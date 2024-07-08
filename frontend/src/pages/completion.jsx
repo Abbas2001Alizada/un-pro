@@ -20,13 +20,15 @@ const Completion = () => {
       });
 
       // Handle success response
-      setPopupMessage("Data sent successfully");
+      setPopupMessage("معلومات موفقانه ارسال گردید");
       setPopupSuccess(true);
+      setNIC('')
+      setName('')
+    
       setTimeout(() => setPopupMessage(""), 3000);
-      console.log('Data sent successfully:', response.data);
     } catch (error) {
       // Handle error response
-      setPopupMessage("Error sending data");
+      setPopupMessage("خطا: معلومات ارسال نشد");
       setPopupSuccess(false);
       setTimeout(() => setPopupMessage(""), 3000);
       console.error('Error sending data:', error);
@@ -34,8 +36,8 @@ const Completion = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 justify-center bg-red-950 relative ">
-      <form onSubmit={handleSubmit} className=" w-full max-w-md bg-red-600 text-white p-6 rounded-lg shadow-md">
+    <div className="flex flex-col items-center p-4 justify-center bg-red-950 relative min-h-screen">
+      <form onSubmit={handleSubmit} className="w-full max-w-md bg-red-600 text-white p-6 rounded-lg shadow-md">
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium text-white">نام شوهر</label>
           <input
@@ -66,9 +68,12 @@ const Completion = () => {
         </button>
       </form>
       {popupMessage && (
-        <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg shadow-lg z-10 ${popupSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {popupMessage}
-        </div>
+        <>
+          <div className="fixed inset-0 bg-black opacity-50 z-10"></div>
+          <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg shadow-lg z-20 ${popupSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            {popupMessage}
+          </div>
+        </>
       )}
     </div>
   );
