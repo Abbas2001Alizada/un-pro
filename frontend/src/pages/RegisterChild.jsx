@@ -82,9 +82,9 @@ const RegisterChild = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 justify-center bg-red-950 relative">
+    <div className=" flex flex-col items-center p-4 justify-center bg-red-950 relative">
       <LoadingOverlay loading={loading} />
-      <form className="w-full max-w-md bg-red-800 text-white p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
+      <form className="w-full max-w-md bg-red-600 text-white p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-4 text-center">ورود اطلاعات فرزند</h2>
         <div className="grid grid-cols-1 gap-4">
           {Object.keys(initialData).map((key) => (
@@ -126,7 +126,7 @@ const RegisterChild = () => {
         <div className="mt-6 text-center">
           <button
             type="submit"
-            className="bg-dark-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-dark-red-800 bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
             ارسال

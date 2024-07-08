@@ -1,68 +1,88 @@
 import records from "../Models/records.js";
 import Appointment from "../Models/appointment.js";
-
-// helper function
-
-// controllers/processUsers.js
-
-// import User from '../models/userModel.js';
-// import { sequelize } from 'sequelize';
 import cron from "node-cron";
 import sequelize from "../dbconnection.js";
+import appointment from "../Models/appointment.js";
 
-// Function to process users in batches of 50
-export async function processUsersDaily() {
+
+
+export const changeState=async (req,res)=>{
+const {Name, NIC, mode}=req.body;
+try{
+const response=await records.findOne({where:{Name, NIC,mode}});
+if(!response){
+return res.status(404).json({message:"Record not found"});
+}
+const couplId=response.coupleId;
+const state='done';
+
+//update the record
+const appointment=await Appointment.update({state:state},{where:{id:couplId}})
+if(appointment[0]===0){
+return res.status(404).json({message:"Appointment not found"});
+}
+res.json({massage:"mode changed"})
+
+}catch{
+
+}
+}
+//function to find the record of family
+
+export const findFamily = async (req, res) => {
+  const { Name, NIC, mode } = req.body;
+
   try {
-    const currentDate = new Date();
+    // Find the record with the provided Name, NIC, and mode
+    const h_record = await records.findOne({ where: { name: Name, NIC, mode } });
 
-    // Check if today is Friday, and if so, skip processing
-    if (currentDate.getDay() === 5) {
-      console.log("Skipping processing on Friday. Rescheduling for Saturday.");
-      return;
+    if (!h_record) {
+      return res.status(404).json({ error: 'Record not found' });
     }
 
-    const pendingAppointments = await Appointment.findAll({
+    const coupleId = h_record.coupleId;
+
+    // Find records with the same coupleId where mode is 'خانم' or 'شاهد'
+    const w_record = await records.findOne({
       where: {
-        state: "pending",
-      },
-      order: [["id", "ASC"]],
-      limit: 50,
+        coupleId,
+        mode: 'خانم'
+      }
     });
 
-    if (pendingAppointments.length > 0) {
-      const minAppointmentId = minAppointmentId[0].id;
+    const wit_record = await records.findAll({
+      where: {
+        coupleId,
+        mode: 'شاهد'
+      }
+    });
 
-      await sequelize.transaction(async (t) => {
-        // Update the status of the next 50 pending users to 'processing'
-        await User.update(
-          { status: "processing" },
-          {
-            where: {
-              id: {
-                [sequelize.Op.gte]: minUserId,
-                [sequelize.Op.lt]: minUserId + 50,
-              },
-            },
-            transaction: t,
-          }
-        );
-      });
+    res.status(200).json({
+      hname: h_record.Name,
+      hfathername: h_record.fatherName,
+      hNIC: h_record.NIC,
+      hmode: h_record.mode,
+    
 
-      console.log(`Processed users with IDs ${minUserId} to ${minUserId + 49}`);
-    } else {
-      console.log("No pending users with appointment today to process.");
-    }
+      wname: w_record ? w_record.Name : null,
+      wfathername: w_record ? w_record.fatherName : null,
+      wNIC: w_record ? w_record.NIC : null,
+      wmode:w_record? w_record.mode : null,
+
+      Witname: wit_record[0] ? wit_record[0].Name : null,
+      Witfathername: wit_record[0] ? wit_record[0].fatherName : null,
+      WitNIC: wit_record[0] ? wit_record[0].NIC : null,
+      Witmode:wit_record[0]? wit_record[0].mode : null,
+
+      Wit1name: wit_record[1] ? wit_record[1].Name : null,
+      Wit1fathername: wit_record[1] ? wit_record[1].fatherName : null,
+      Wit1NIC: wit_record[1] ? wit_record[1].NIC : null,
+      Wit1mode: wit_record[1] ? wit_record[1].mode : null
+    });
   } catch (error) {
-    console.error("Error processing users:", error);
-    throw error;
+    res.status(500).json({ error: error.message });
   }
-}
-
-// Schedule cron job to run daily at 00:00 (midnight), except on Fridays
-cron.schedule("0 0 * * *", async () => {
-  console.log("Running daily user processing job...");
-  await processUsersDaily();
-});
+};
 
 //find all records
 export const getAllRecords = async (req, res) => {
@@ -121,9 +141,9 @@ export const insertRecord = async (req, res) => {
       religion,
       coupleId,
       district,
-      mode:'شاهد'
+      mode: 'شاهد'
     });
-    
+
     res.status(201).json({
       message: `Record created successfully by id`,
       data: newRecord
@@ -149,7 +169,7 @@ export const createRecord = async (req, res) => {
       state: "pending",
     });
     let family_id = appointment.id;
-    let familyCode=appointment.familyCode;
+    let familyCode = appointment.familyCode;
 
 
     sequelize.transaction(async (t) => {
@@ -191,7 +211,7 @@ export const createRecord = async (req, res) => {
       );
     });
 
-    res.status(201).json({familyCode:familyCode});
+    res.status(201).json({ familyCode: familyCode });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

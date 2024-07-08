@@ -1,65 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-const Report = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+const Reporting = () => {
+  const [timeRange, setTimeRange] = useState('today');
+  const [reportData, setReportData] = useState({ pending: 0, processing: 0, done: 0 });
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const response = await axios.get('http://localhost:8038/appointment');
-        setAppointments(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError('خطا در دریافت اطلاعات');
-        setLoading(false);
-      }
-    };
+    fetchReportData();
+  }, [timeRange]);
 
-    fetchAppointments();
-  }, []);
+  const fetchReportData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8038/appointment/report`, {
+        params: { timeRange },
+      });
+      setReportData(response.data);
+    } catch (error) {
+      console.error('Error fetching report data:', error);
+    }
+  };
 
-  if (loading) {
-    return <div className="text-center text-white">در حال بارگذاری...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
+  const data = {
+    labels: ['انتظار', 'پروسس', 'تکمیل'],
+    datasets: [
+      {
+        label: 'Appointments',
+        data: [reportData.pending, reportData.processing, reportData.done],
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 p-4">
-      <div className="w-full max-w-4xl bg-red-700 p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl mb-4 text-center text-white">گزارش ملاقات‌ها</h2>
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b-2 border-gray-300">شناسه ملاقات</th>
-              <th className="py-2 px-4 border-b-2 border-gray-300">نام کاربر</th>
-              <th className="py-2 px-4 border-b-2 border-gray-300">تاریخ</th>
-              <th className="py-2 px-4 border-b-2 border-gray-300">زمان</th>
-              <th className="py-2 px-4 border-b-2 border-gray-300">وضعیت</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((appointment) => (
-              <tr key={appointment.id}>
-                <td className="py-2 px-4 border-b border-gray-300">{appointment.id}</td>
-                <td className="py-2 px-4 border-b border-gray-300">{appointment.username}</td>
-                <td className="py-2 px-4 border-b border-gray-300">{appointment.date}</td>
-                <td className="py-2 px-4 border-b border-gray-300">{appointment.time}</td>
-                <td className={`py-2 px-4 border-b border-gray-300 ${appointment.status === 'موفق' ? 'text-green-500' : 'text-red-500'}`}>
-                  {appointment.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="p-4">
+      <h2 className="text-center text-2xl mb-4">گزارش ملاقات</h2>
+
+      <Bar data={data} />
+      <div className="mt-4 text-center">
+        <p>انتظار {reportData.pending}</p>
+        <p>پروسس {reportData.processing}</p>
+        <p>تکمیل {reportData.done}</p>
       </div>
     </div>
   );
 };
 
-export default Report;
+export default Reporting;

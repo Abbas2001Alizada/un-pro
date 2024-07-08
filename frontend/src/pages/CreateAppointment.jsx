@@ -34,12 +34,12 @@ const CreateAppointment = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 relative">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">به‌روزرسانی قرارها</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-red-950 p-4 relative">
+      <div className="bg-red-600 shadow-lg rounded-lg p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">به‌روزرسانی قرارها</h2>
+        <form onSubmit={handleSubmit} className="space-y-4 ">
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">مقدار رکوردها برای به‌روزرسانی:</label>
+            <label className="block text-white font-semibold mb-2">مقدار رکوردها برای به‌روزرسانی:</label>
             <input
               type="number"
               value={amount}
@@ -48,7 +48,7 @@ const CreateAppointment = () => {
               className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-200"
             />
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300">به‌روزرسانی</button>
+          <button type="submit" className="w-full bg-white text-black py-2 rounded-md hover:bg-blue-600 transition duration-300">به‌روزرسانی</button>
         </form>
       </div>
       {showMessage && (

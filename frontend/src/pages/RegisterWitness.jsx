@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const InsertRecord = () => {
+const RegisterWitness = () => {
   const [formData, setFormData] = useState({
     Name: '',
     lastName: '',
@@ -95,7 +95,7 @@ const InsertRecord = () => {
           </div>
         </div>
       )}
-      <form className="w-full max-w-md bg-red-700 p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
+      <form className="w-full max-w-md bg-red-600 p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-4 text-center text-white">ثبت شاهد</h2>
         {Object.keys(formData).map((field) => (
           <div className="mb-4" key={field}>
@@ -161,4 +161,4 @@ const InsertRecord = () => {
   );
 };
 
-export default InsertRecord;
+export default RegisterWitness;

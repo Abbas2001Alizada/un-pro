@@ -1,28 +1,104 @@
 import Appointment from '../Models/appointment.js';
 import records from '../Models/records.js';
+import Op from 'sequelize'
+
+//functions for reporting
+
+const getTimeRangeCondition = (timeRange) => {
+  const today = new Date();
+  const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+  const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  switch (timeRange) {
+    case 'today':
+      return {
+        updatedAt: {
+          [Op.gte]: startOfToday,
+        },
+      };
+    case 'week':
+      return {
+        appointmentTime: {
+          [Op.gte]: startOfWeek,
+        },
+      };
+    case 'month':
+      return {
+        appointmentTime: {
+          [Op.gte]: startOfMonth,
+        },
+      };
+    default:
+      return {};
+  }
+};
+
+export const getAppointmentReport = async (req, res) => {
+  // const { timeRange } = req.query;
+
+  try {
+    // const condition = getTimeRangeCondition(timeRange);
+
+    const pendingCount = await Appointment.count({
+      where: {
+        // ...condition,
+        state: 'pending',
+      },
+    });
+
+    const processingCount = await Appointment.count({
+      where: {
+        // ...condition,
+        state: 'processing',
+      },
+    });
+
+    const doneCount = await Appointment.count({
+      where: {
+        // ...condition,
+        state: 'done',
+      },
+    });
+
+    res.json({
+      pending: pendingCount,
+      processing: processingCount,
+      done: doneCount,
+    }); 
+
+  } catch (error) {   
+    console.error('Error fetching report data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 
 // Controller function to handle appointment search by name, mode, and NIC
 export const searchBySpecification = async (req, res) => {
   const { name, mode, NIC } = req.body;
 
   try {
+    //validation
+    if (!name ||!mode ||!NIC) {
+      return res.status(400).json({ message: 'All fields are required', });
+    }
     // Find the record in the records table
     const record = await records.findOne({
       where: {
-        name,
-        mode,
-        NIC
+        Name:name,
+        mode:mode,
+        NIC:NIC
       },
-      attributes: ['id']
+      attributes: ['coupleId']
     });
-
     if (!record) {
       return res.status(404).json({ message: 'Record not found' });
     }
-
     // Find the appointment using the retrieved id
     const appointment = await Appointment.findOne({
-      where: { id: record.id },
+      where: { id: record.coupleId },
       attributes: ['state', 'appointmentTime']
     });
 
@@ -40,42 +116,9 @@ export const searchBySpecification = async (req, res) => {
   }
 };
 
-
-export const checkAppointment = async (req, res) => {
-  try {
-    const { searchType, familyCode, husbandName, husbandNIC, mode } = req.body;
-
-    let appointment;
-
-    if (searchType === 'familyCode') {
-      appointment = await getAppointmentByFamilyCode(familyCode);
-    } else if (searchType === 'specification') {
-      const recordId = await getRecordIdByHusbandDetails(husbandName, husbandNIC, mode);
-      if (recordId) {
-        appointment = await getAppointmentById(recordId);
-      }
-    }
-
-    if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
-
-    if (appointment.state === 'pending') {
-      res.json({ redirectTo: '/pending-appointment' });
-    } else if (appointment.state === 'processing') {
-      res.json({ redirectTo: '/processing-appointment', appointmentTime: appointment.appointmentTime });
-    }
-  } catch (error) {
-    console.error('Error checking appointment:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-
 export const createAppointment = (req, res) => {
 
 }
-
 export const getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.findAll();

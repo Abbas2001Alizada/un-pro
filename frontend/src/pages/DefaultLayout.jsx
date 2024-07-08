@@ -1,7 +1,6 @@
 import Nav from "../component/Navbbar.jsx";
 import Instruction from "../component/instruction.jsx";
 import Footer from "../component/footer.jsx";
-import checkFormButton from "../component/checkForm.jsx";
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
