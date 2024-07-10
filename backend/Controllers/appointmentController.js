@@ -99,16 +99,17 @@ export const searchBySpecification = async (req, res) => {
     // Find the appointment using the retrieved id
     const appointment = await Appointment.findOne({
       where: { id: record.coupleId },
-      attributes: ['state', 'appointmentTime']
+      attributes: ['state', 'appointmentTime','familyCode']
     });
 
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
     }
-
     return res.json({
       state: appointment.state,
-      appointmentTime: appointment.appointmentTime
+      appointmentTime: appointment.appointmentTime,
+      id:record.coupleId,
+      familyCode:appointment.familyCode
     });
   } catch (error) {
     console.error('Error fetching appointment by specification:', error);
@@ -134,7 +135,7 @@ export const searchByFamilyCode = async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
       where: { familyCode },
-      attributes: ['state', 'appointmentTime'],
+      attributes: ['state', 'appointmentTime','id','familyCode'],
     });
     if (!appointment) {
       return res.status(404).json({ massage: "not found" });
@@ -143,6 +144,8 @@ export const searchByFamilyCode = async (req, res) => {
     return res.json({
       state: appointment.state,
       appointmentTime: appointment.appointmentTime,
+      id:appointment.id,
+      familyCode:appointment.familyCode
     });
   } catch (error) {
     console.error('Error fetching appointment by family code:', error);

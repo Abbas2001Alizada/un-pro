@@ -3,6 +3,7 @@ import Appointment from "../Models/appointment.js";
 import cron from "node-cron";
 import sequelize from "../dbconnection.js";
 import appointment from "../Models/appointment.js";
+import Children from '../Models/children.js'
 
 
 
@@ -57,32 +58,41 @@ export const findFamily = async (req, res) => {
       }
     });
 
+    const children = await Children.findAll({
+      where: { parentId: coupleId }
+    });
+
     res.status(200).json({
-      hname: h_record.Name,
-      hfathername: h_record.fatherName,
-      hNIC: h_record.NIC,
-      hmode: h_record.mode,
-    
-
-      wname: w_record ? w_record.Name : null,
-      wfathername: w_record ? w_record.fatherName : null,
-      wNIC: w_record ? w_record.NIC : null,
-      wmode:w_record? w_record.mode : null,
-
-      Witname: wit_record[0] ? wit_record[0].Name : null,
-      Witfathername: wit_record[0] ? wit_record[0].fatherName : null,
-      WitNIC: wit_record[0] ? wit_record[0].NIC : null,
-      Witmode:wit_record[0]? wit_record[0].mode : null,
-
-      Wit1name: wit_record[1] ? wit_record[1].Name : null,
-      Wit1fathername: wit_record[1] ? wit_record[1].fatherName : null,
-      Wit1NIC: wit_record[1] ? wit_record[1].NIC : null,
-      Wit1mode: wit_record[1] ? wit_record[1].mode : null
+      husband: {
+        name: h_record.Name,
+        fatherName: h_record.fatherName,
+        NIC: h_record.NIC,
+        mode: h_record.mode,
+      },
+      wife: w_record ? {
+        name: w_record.Name,
+        fatherName: w_record.fatherName,
+        NIC: w_record.NIC,
+        mode: w_record.mode,
+      } : null,
+      witnesses: wit_record.length > 0 ? wit_record.map(wit => ({
+        name: wit.Name,
+        fatherName: wit.fatherName,
+        NIC: wit.NIC,
+        mode: wit.mode
+      })) : null,
+      children: children.length > 0 ? children.map(child => ({
+        name: child.Name,
+        fatherName:h_record.Name,
+        birthDate: child.birthDate,
+        NIC: child.NIC
+      })) : null
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 //find all records
 export const getAllRecords = async (req, res) => {

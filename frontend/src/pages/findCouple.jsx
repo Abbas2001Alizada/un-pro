@@ -5,6 +5,8 @@ const SendToDatabase = () => {
   const [Name, setName] = useState("");
   const [NIC, setNIC] = useState("");
   const [records, setRecords] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,9 +25,13 @@ const SendToDatabase = () => {
 
       // Handle success response
       setRecords(response.data);
+      setMessage("Data received successfully");
+      setMessageType("success");
       console.log("Data received successfully:", response.data);
     } catch (error) {
       // Handle error response
+      setMessage("Error sending data");
+      setMessageType("error");
       console.error("Error sending data:", error);
     }
   };
@@ -73,36 +79,62 @@ const SendToDatabase = () => {
         </button>
       </form>
 
+      {message && (
+        <div
+          className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75`}
+        >
+          <div
+            className={`bg-white p-6 rounded-lg shadow-lg ${
+              messageType === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            <p>{message}</p>
+            <button
+              onClick={() => setMessage(null)}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              بستن
+            </button>
+          </div>
+        </div>
+      )}
+
       {records && (
-        <div className="mt-8">
+        <div className="mt-8 w-full max-w-4xl" dir="rtl">
           <Table
-            person={records.hname}
-            fatherName={records.hfathername}
-            NIC={records.hNIC}
-            mode={records.hmode}
+          className=" align-middle text-center"
+            person={records.husband.name}
+            fatherName={records.husband.fatherName}
+            NIC={records.husband.NIC}
+            mode={records.husband.mode}
           />
-          <Table
-            person={records.wname}
-            fatherName={records.wfathername}
-            NIC={records.wNIC}
-            mode={records.wmode}
-          />
-          {records.Witname && (
+          {records.wife && (
             <Table
-              person={records.Witname}
-              fatherName={records.Witfathername}
-              NIC={records.WitNIC}
-              mode={records.Witmode}
+              person={records.wife.name}
+              fatherName={records.wife.fatherName}
+              NIC={records.wife.NIC}
+              mode={records.wife.mode}
             />
           )}
-          {records.Wit1name && (
-            <Table
-              person={records.Wit1name}
-              fatherName={records.Wit1fathername}
-              NIC={records.Wit1NIC}
-              mode={records.Wit1mode}
-            />
-          )}
+          {records.witnesses &&
+            records.witnesses.map((wit, index) => (
+              <Table
+                key={index}
+                person={wit.name}
+                fatherName={wit.fatherName}
+                NIC={wit.NIC}
+                mode={wit.mode}
+              />
+            ))}
+          {records.children &&
+            records.children.map((child, index) => (
+              <Table
+                key={index}
+                person={child.name}
+                fatherName={child.fatherName}
+                mode="فرزند"
+              />
+            ))}
         </div>
       )}
     </div>

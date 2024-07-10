@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 const ProcessingAppointment = () => {
   const Location=useLocation();
-  const {appointmentTime,state}=Location.state;
+  const {id,appointmentTime,state,familyCode}=Location.state;
+  let familyId=id;
   let time=appointmentTime;;
   time=time.split('T')[0];
   return (
@@ -12,6 +13,8 @@ const ProcessingAppointment = () => {
         <h1 className='text-2xl text-green-500'>نوبت شما فرارسیده است</h1>
         <h2 className="text-2xl mb-4 text-green-500">لطفاً در زمان تعیین شده به مرکز بیایید</h2>
         <p className="text-black">زمان ملاقات شما: {time}</p>
+        <p className="text-black">  آي ‌دی شما:{familyId}</p>
+        <p className="text-black">کود فامیل:{familyCode}</p>
       </div>
     </div>
   );
