@@ -6,6 +6,30 @@ import appointment from "../Models/appointment.js";
 import Children from '../Models/children.js'
 
 
+export const getRecords = async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const record = await records.findAll({
+      where: {
+        coupleId:id,
+        mode:['شوهر','خانم'],
+      },
+    });
+
+    if (record.length === 0) {
+      return res.status(404).json({ message: 'No records found.' });
+    }
+
+    res.status(200).json(record);
+    console.log(record);
+  } catch (error) {
+    console.error('Error searching records:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 export const changeState=async (req,res)=>{
 const {Name, NIC, mode}=req.body;
@@ -92,8 +116,6 @@ export const findFamily = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
 //find all records
 export const getAllRecords = async (req, res) => {
   try {

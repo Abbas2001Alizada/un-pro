@@ -12,6 +12,7 @@ import UserDashboard from "./pages/UserDashboard.jsx";
 import PendingAppointment from "./component/pendingAppointment.jsx";
 import ProcessingAppointment from "./component/processingAppointment.jsx";
 import Completed from "./component/Complete.jsx";
+import DownloadNikahRequest from "./pages/Request.jsx";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="/done" element={<Completed />} />
           <Route path="/profile/*" element={<Profilepage />} />
           <Route path="/child/registeration" element={<RegisterChild />} />
+          <Route path="/DownnloadForm" element={<DownloadNikahRequest />} />
         </Routes>
       </BrowserRouter>
     </>

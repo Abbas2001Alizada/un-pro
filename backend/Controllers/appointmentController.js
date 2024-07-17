@@ -134,8 +134,7 @@ export const searchByFamilyCode = async (req, res) => {
 
   try {
     const appointment = await Appointment.findOne({
-      where: { familyCode },
-      attributes: ['state', 'appointmentTime','id','familyCode'],
+      where: { familyCode }
     });
     if (!appointment) {
       return res.status(404).json({ massage: "not found" });

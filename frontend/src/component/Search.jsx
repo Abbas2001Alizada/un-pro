@@ -92,11 +92,11 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
 
           if (response.data.state === "pending") {
             navigate("/pending",{
-              state:{Id:response.data.id},
+              state:{Id:response.data.id,familyCode:response.data.familyCode},
             });
           } else if (response.data.state === "processing") {
             navigate("/processing", {
-              state: {id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state },
+              state: {id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state,familyCode:response.data.familyCode },
             });
           }else if (response.data.state === "done") {
             navigate("/done", {

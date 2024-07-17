@@ -100,7 +100,7 @@ const SendToDatabase = () => {
       )}
 
       {records && (
-        <div className="mt-8 w-full max-w-4xl" dir="rtl">
+        <div className="mt-8 w-full max-w-4xl" >
           <Table
           className=" align-middle text-center"
             person={records.husband.name}
@@ -110,6 +110,7 @@ const SendToDatabase = () => {
           />
           {records.wife && (
             <Table
+              className=" align-middle text-center"
               person={records.wife.name}
               fatherName={records.wife.fatherName}
               NIC={records.wife.NIC}
@@ -119,6 +120,7 @@ const SendToDatabase = () => {
           {records.witnesses &&
             records.witnesses.map((wit, index) => (
               <Table
+                className=" align-middle text-center"
                 key={index}
                 person={wit.name}
                 fatherName={wit.fatherName}
@@ -129,6 +131,7 @@ const SendToDatabase = () => {
           {records.children &&
             records.children.map((child, index) => (
               <Table
+                className=" align-middle text-center"
                 key={index}
                 person={child.name}
                 fatherName={child.fatherName}

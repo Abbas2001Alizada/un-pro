@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { getAllRecords, getRecordById, createRecord, updateRecord, deleteRecord, insertRecord, findFamily, changeState } from '../Controllers/recordController.js';
+import { getAllRecords, getRecordById, createRecord, updateRecord, deleteRecord, insertRecord, findFamily, changeState, getRecords } from '../Controllers/recordController.js';
     
 const router = Router();
 
 // Define routes
 router.get('/', getAllRecords);
+router.post('/getName',getRecords);
 router.get('/:id', getRecordById);
 router.post('/', createRecord);
 router.post('/witness',insertRecord)
