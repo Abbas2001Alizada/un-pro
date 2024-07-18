@@ -9,26 +9,32 @@ const FormDownload = ({ familyId }) => {
   const [formData, setFormData] = useState({
     groomName: "",
     groomFatherName: "",
+    groomGfatherName: "",
     groomAddress: "",
     brideName: "",
     brideFatherName: "",
+    birdeGfatherName: "",
     brideAddress: "",
   });
 
   useEffect(() => {
-    // Fetch form data from your API
     const fetchData = async () => {
       try {
-console.log(id);
-        const specification=await axios.post("http://localhost:8038/records/getName",{id})
-setFormData({
-    groomName:specification.data[0].Name,
-    groomFatherName:specification.data[0].fatherName,
-    groomAddress:specification.data[0].residency,
-    brideName:specification.data[0].Name,
-    brideFatherName:specification.data[0].fatherName,
-    brideAddress:specification.data[0].residency,
-  })
+        console.log(id);
+        const specification = await axios.post(
+          "http://localhost:8038/records/getName",
+          { id }
+        );
+        setFormData({
+          groomName: specification.data[0].Name,
+          groomFatherName: specification.data[0].fatherName,
+          groomGfatherName: specification.data[0].GfatherName,
+          groomAddress: specification.data[0].residency,
+          brideName: specification.data[1].Name,
+          brideFatherName: specification.data[1].fatherName,
+          brideGfatherName: specification.data[1].GfatherName,
+          brideAddress: specification.data[1].residency,
+        });
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -41,12 +47,12 @@ setFormData({
     const input = document.getElementById("form-content");
     const canvas = await html2canvas(input, {
       scale: 2,
-      width: 900,
-      height: 620,
+      width:900,
+      height: 1300,
     });
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
-      orientation: "landscape",
+      orientation: "portrait",
       unit: "px",
       format: [canvas.width, canvas.height],
     });
@@ -55,52 +61,112 @@ setFormData({
   };
 
   return (
-    <div dir="rtl" className="form-container flex flex-col items-center p-8 bg-gray-100 min-h-screen">
+    <div
+      dir="rtl"
+      className="form-container flex flex-col p-8 bg-gray-100 min-h-screen"
+    >
       <div
         id="form-content"
         className="bg-white p-10 rounded-lg shadow-lg w-full max-w-4xl"
       >
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2">درخواست نکاح</h2>
+        <div className="text-center mb-8 items-center">
+          <h2 className="text-2xl font-bold mb-2">درخواست نکاح‌خط</h2>
           <h3 className="text-xl font-semibold">شهرت درخواست کنندگان</h3>
         </div>
-        <p className="mb-4">به مقام محترم محکمه وثایق شهر کابل</p>
-        <p className="mb-4">
+        <p className="mb-4 text-right">به مقام محترم محکمه وثایق شهر کابل</p>
+        <p className="mb-4 text-right">
           ما دو نفر هر یک {formData.groomName} ولد {formData.groomFatherName}{" "}
-          ولدیت {formData.groomFatherName} باشنده {formData.groomAddress} و{" "}
+          ولدیت {formData.groomGfatherName} باشنده {formData.groomAddress} و{" "}
           {formData.brideName} ولد {formData.brideFatherName} ولدیت{" "}
-          {formData.brideFatherName} باشنده {formData.brideAddress} در حال داشتن
-          اهلیت کامل حقوقی به رضا و رغبت خود میخواهیم ازدواج نماییم، خواهشمندیم
-          در طی مراحل و توثیق عقد نکاح ما به شعبه مربوط خویش هدایت فرمایید.
+          {formData.birdeGfatherName} باشنده {formData.brideAddress} در حال
+          داشتن اهلیت کامل حقوقی به رضا و رغبت خود میخواهیم ازدواج نماییم،
+          خواهشمندیم در طی مراحل و توثیق عقد نکاح ما به شعبه مربوط خویش هدایت
+          فرمایید.
         </p>
-        <p className="mb-4">محل امضا درخواست کنندگان: ..................</p>
-        <p className="mb-4">
+        <div className="mb-4 ">
+          محل امضا درخواست کنندگان: <br />
+          <br />
+          <div className="flex">
+            <p className=" w-1/2 text-right">".........................." </p>{" "}
+            <p className="w-1/2 text-left"> "............................"</p>
+          </div>
+        </div>
+        <hr />
+        <hr />
+        <hr />
+        <br />
+        <p className="mb-4 text-right">
           فورم هذا به منظور طی مراحل به مراجع مربوط ارسال گردید.
         </p>
-        <p className="mb-4">
-          محل امضا رئیس محکمه یا آمر اداره ثبت و اسناد و وثایق:
-          ..................
+        <div className="mb-4 ">
+          <p className="text-right">
+            محل امضا رئیس محکمه یا آمر اداره ثبت و اسناد و وثایق: <br />
+            <br />
+          </p>
+          <p className="text-left w-1/3">
+            " ................................"
+          </p>{" "}
+        </div>
+        <br />
+        <br />
+        <hr />
+        <hr />
+        <hr />
+        <br />
+        <br />
+        <p className="mb-4 text-right">
+          <p>تصدیق اهالی گذر:</p> با درخواست کنندگان معرفت کامل داریم و در
+          ازدواج شان موانع شرعی و قانونی وجود نداریم. در صورت خلاف مسوول و
+          جوابده میباشیم.
         </p>
-        <p className="mb-4">
-          تصدیق اهالی گذر: با درخواست کنندگان معرفت کامل داریم و در ازدواج شان
-          موانع شرعی و قانونی وجود نداریم. در صورت خلاف مسوول و جوابده میباشیم.
-        </p>
-        <p className="mb-4">
-          محل امضا و اثر انگشت سه نفر از همجواران و ملا امام مسجد:
-          ..................
-        </p>
-        <p className="mb-4">
-          تصدیق وکیل گذر یا قریه‌دار: از تحریر فوق اهالی و ملا امام مسجد تصدیق
-          است. محل مهر: ..................
-        </p>
-        <p className="mb-4">
-          تصدیق اداره محل (ناحیه یا ولسوالی): از برحالی وکیل گذر یا قریه‌دار
-          تصدیق است. محل مهر: ..................
-        </p>
-        <p className="mb-4">
-          شعبه مربوطه: نکاحنامه مطلوبه را اجرا نمایند. محل امضا رئیس محکمه یا
-          آمر اسناد و وثایق: ..................
-        </p>
+        <div className="mb-4 text-right">
+          محل امضا و اثر انگشت سه نفر از همجواران و ملا امام مسجد:{" "}
+          <div className=" grid grid-cols-2 grid-rows-2">
+            <p>................</p>
+            <p>................</p>
+            <p>................</p>
+            <p>................</p>
+          </div>
+        </div>
+        <hr />
+        <hr />
+        <hr />
+        <br />
+        <br />
+        <p className="mb-4 text-right">تصدیق وکیل گذر یا قریه‌دار:</p>
+        <div className="flex w-full ">
+          {" "}
+          <p className="mb-4 text-right">
+            {" "}
+            از تحریر فوق اهالی و ملا امام مسجد تصدیق است.{" "}
+          </p>
+          <p className="text-left w-1/3">محل مهر: .................</p>
+        </div>{" "}
+        <br />
+        <hr />
+        <hr />
+        <hr />
+        <br />
+        <br />
+        <br />
+        <p className="mb-4 text-right">تصدیق اداره محل (ناحیه یا ولسوالی):</p>
+        <div className=" flex">
+          <p className=" text-right float-right w-2/3">
+            از برحالی وکیل گذر یا قریه‌دار تصدیق است.
+          </p>
+          <p className="float-left">محل مهر: ..................</p>
+        </div>
+        <br />
+        <hr />
+        <hr />
+        <hr />
+        <br />
+        <br />
+        <p className="text-right">شعبه مربوطه:</p>
+        <p className="mb-4 text-right w-1/3">
+           نکاحنامه مطلوبه را اجرا نمایند.  </p>محل امضا رئیس
+          محکمه یا آمر اسناد و وثایق: ..................
+       
       </div>
       <button
         onClick={handleDownloadPDF}

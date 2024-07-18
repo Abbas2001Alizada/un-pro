@@ -100,7 +100,7 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
             });
           }else if (response.data.state === "done") {
             navigate("/done", {
-              state: {Id:response.data.id },
+              state: {Id:response.data.id,familyCode:response.data.familyCode },
             });
           }
         } else if (searchType === "specification") {
@@ -118,7 +118,7 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
             });
           } else if (response.data.state === "processing") {
             navigate("/processing", {
-              state: {familyCode:response.data.familyCode,Id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state },
+              state: {familyCode:response.data.familyCode,id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state },
             });
           }else if (response.data.state === "done") {
             navigate("/done", {
