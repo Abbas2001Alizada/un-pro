@@ -30,6 +30,10 @@ const User = sequelize.define('User', {
     role: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    zone: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 },{
         timestamps: true

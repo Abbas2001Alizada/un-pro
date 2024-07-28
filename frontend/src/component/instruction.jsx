@@ -12,7 +12,7 @@ function Instruction() {
         مراحل اخذ نکاح خط :
       </h1>
       <ol
-        className=" items-start list-decimal  space-y-4 text-gray-700"
+        className=" text-xl items-start list-decimal  space-y-4 text-gray-700"
         dir="rtl"
       >
         <li className="it">

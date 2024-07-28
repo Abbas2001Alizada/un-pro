@@ -19,8 +19,8 @@ const Profilepage = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`http://localhost:8038/users/${id}`);
-        const { name, username, email, image, password } = response.data;
-        setFormData({ name, username, password, email, image });
+        const { name, username, email, image, password,zone } = response.data;
+        setFormData({ name, username, password, email, image, });
         setPreviewUrl(`http://localhost:8038/uploads/${image}`);
       } catch (error) {
         console.error('خطا در دریافت اطلاعات کاربر:', error);

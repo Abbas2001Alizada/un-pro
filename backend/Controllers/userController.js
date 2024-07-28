@@ -36,14 +36,14 @@ export const authenticateUser = async (req, res) => {
 };
 // Controller function to create a new user
 export const createUser = async (req, res) => {
-  const {name, username, password, email, role } = req.body;
+  const {name, userName, Password, email, role,zone } = req.body;
 
   // Basic validation
-  if (!name || !username || !password || !email || !role) {
+  if (!name || !userName || !Password || !email || !role) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  if (password.length < 6) {
+  if (Password.length < 6) {
     return res.status(400).json({ error: 'Password must be at least 6 characters' });
   }
 
@@ -53,21 +53,22 @@ export const createUser = async (req, res) => {
 
   try {
     // Check if username already exists
-    const existingUser = await User.findOne({ where: { username } });
+    const existingUser = await User.findOne({ where: { username:userName } });
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
     }
 
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 6);
+    const hashedPassword = await bcrypt.hash(Password, 6);
 
     // Create the new user record
     const newUser = await User.create({
       name,
-      username,
+      username:userName,
       password: hashedPassword,
       email,
-      role
+      role,
+      zone
     });
 
     // Send success response
@@ -84,7 +85,7 @@ export const getUserDetails = async (req, res) => {
 
   try {
     const user = await User.findByPk(userId, {
-      attributes: ['name', 'username', 'password', 'email', 'image','role'],
+      attributes: ['name', 'username', 'password', 'email', 'image','role','zone'],
     });
 
     if (!user) {
@@ -144,18 +145,44 @@ export const updateUser = async (req, res) => {
   // });
 };
 
+// export const deleteUser = async (req, res) => {
+//   try {
+//     const { deleteid,id } = req.params;
+//     if (deleteid==id){
+//     const deleted = await User.destroy({
+//       where: { deleteid }
+//     });
+//     if (deleted) {
+//       res.status(204).send();
+//     } else {
+//       res.status(404).json({ error: 'User not found' });
+//     }}
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 export const deleteUser = async (req, res) => {
+  const {form} = req.body;
+  const { adminId, userId, deleteId } = form;
+
   try {
-    const { id } = req.params;
-    const deleted = await User.destroy({
-      where: { id }
-    });
-    if (deleted) {
-      res.status(204).send();
+    if (adminId === userId) {
+      const deleted = await User.destroy({
+        where: { id:deleteId}
+      });
+
+      if (deleted) {
+        return res.status(200).json({ message: 'کاربر حذف شد' });
+      } else {
+        return res.status(404).json({ message: 'کاربر پیدا نشد' });
+      }
     } else {
-      res.status(404).json({ error: 'User not found' });
+      return res.status(403).json({ message: 'مربوط زون دیگر است' });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'خطا' });
+    console.log(adminId, userId, deleteId );
   }
 };

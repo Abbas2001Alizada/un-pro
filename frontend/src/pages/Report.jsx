@@ -8,6 +8,8 @@ import html2canvas from 'html2canvas';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Reporting = () => {
+  const date=new Date();
+  const currentDate=date.toISOString().split('T')[0];
 
   const [timeRange, setTimeRange] = useState('today');
   const [reportData, setReportData] = useState({ pending: 0, processing: 0, done: 0 });
@@ -62,7 +64,7 @@ const Reporting = () => {
 
       <Bar data={data} />
       <div id='form-content' className="mt-4 ">
-        <p className='text-xl'>گزارش سیستم به شکل کلی قرار ذیل است.</p>
+        <p className='text-xl'>گزارش کلی سیستم الیوم{currentDate} به شکل ذیل است.</p>
         <p>به تعداد: <span className='text-red-400'>{reportData.pending}</span> فامیل معلومات شان ثبت گردیده و اماده است تا نوبت دریافت نموده پروسه اخد نکاح خط خویش را طی مراحل نمایند </p>
         <p>به تعداد:<span className='text-blue-500'>{reportData.processing}</span> فامیل از طرف سیستم نوبت اخذ نموده و آماده طی مراحل است.</p>
         <p>به تعداد:<span className='text-green-500'>{reportData.done}</span> فامیل نکاح خط خویش را اخد نموده اند.</p>

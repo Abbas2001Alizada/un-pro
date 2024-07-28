@@ -193,12 +193,14 @@ export const insertRecord = async (req, res) => {
 //create a new record
 export const createRecord = async (req, res) => {
   try {
-    const { husbandData, wifeData } = req.body;
+    const { husbandData, wifeData,zoneNumber } = req.body;
+   
 
     //  first we should enter data to the appointment table
     const appointment = await Appointment.create({
       familyCode: new Date().getTime().toString().slice(7, 13),
       state: "pending",
+      zone:zoneNumber,
     });
     let family_id = appointment.id;
     let familyCode = appointment.familyCode;
@@ -248,7 +250,7 @@ export const createRecord = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-//to update a record
+// to update a record
 
 export const updateRecord = async (req, res) => {
   try {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Search = () => {
+const SearchAppointments = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -224,4 +224,4 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
   );
 };
 
-export default Search;
+export default SearchAppointments;

@@ -13,7 +13,7 @@ const FormDownload = ({ familyId }) => {
     groomAddress: "",
     brideName: "",
     brideFatherName: "",
-    birdeGfatherName: "",
+    brideGfatherName: "",
     brideAddress: "",
   });
 
@@ -35,6 +35,7 @@ const FormDownload = ({ familyId }) => {
           brideGfatherName: specification.data[1].GfatherName,
           brideAddress: specification.data[1].residency,
         });
+        console.log(specification.data[1].GfatherName);
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -78,7 +79,7 @@ const FormDownload = ({ familyId }) => {
           ما دو نفر هر یک {formData.groomName} ولد {formData.groomFatherName}{" "}
           ولدیت {formData.groomGfatherName} باشنده {formData.groomAddress} و{" "}
           {formData.brideName} ولد {formData.brideFatherName} ولدیت{" "}
-          {formData.birdeGfatherName} باشنده {formData.brideAddress} در حال
+          {formData.brideGfatherName} باشنده {formData.brideAddress} در حال
           داشتن اهلیت کامل حقوقی به رضا و رغبت خود میخواهیم ازدواج نماییم،
           خواهشمندیم در طی مراحل و توثیق عقد نکاح ما به شعبه مربوط خویش هدایت
           فرمایید.

@@ -152,7 +152,7 @@ export const searchByFamilyCode = async (req, res) => {
   }
 };
 export const updateAppointments = async (req, res) => {
-  const { amount } = req.body;
+  const { amount,zone} = req.body;
 
   if (!amount || isNaN(amount) || amount <= 0) {
     return res.status(400).json({ error: 'Invalid amount specified' });
@@ -160,7 +160,7 @@ export const updateAppointments = async (req, res) => {
 
   try {
     const appointments = await Appointment.findAll({
-      where: { state: 'pending' },
+      where: { state: 'pending',zone:zone },
       order: [['id', 'ASC']],
       limit: parseInt(amount, 10)
     });

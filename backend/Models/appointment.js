@@ -8,6 +8,9 @@ const appointment = sequelize.define('appointment', {
     appointmentTime: {
         type: DataTypes.DATE,
         allowNull: true
+    },  zone: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     familyCode: {
         type: DataTypes.STRING,

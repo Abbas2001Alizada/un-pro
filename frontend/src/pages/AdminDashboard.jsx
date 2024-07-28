@@ -97,17 +97,17 @@ const AdminDashboard = () => {
           {selectedOption === "CreateAccount" ? (
             <section className="dir-rtl">
               <h2 className="text-xl font-semibold mb-4">ایجاد حساب کاربری جدید</h2>
-              <RegisterUser />
+              <RegisterUser id={id}/>
             </section>
           ) : selectedOption === 'DeleteAccount' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
-              <DeleteUser />
+              <DeleteUser id={id}/>
             </section>
           ) : selectedOption === 'CreateAppointment' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">نوبت دهی</h2>
-              <CreateAppointment />
+              <CreateAppointment id={id}/>
             </section>
           ) :selectedOption==='report'?(
             <section>
