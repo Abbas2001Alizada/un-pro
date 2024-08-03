@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import LoadingOverlay from "../component/LoadingOverlay.jsx";
 import axios from "axios";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Record = () => {
   const initialData = {
@@ -19,7 +21,7 @@ const Record = () => {
   };
 
   const [familyCode, setFamilyCode] = useState("");
-  const [msg_success, setMsg_success] = useState("");
+  const [msgSuccess, setMsgSuccess] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [husbandData, setHusbandData] = useState({
     ...initialData,
@@ -35,20 +37,31 @@ const Record = () => {
   const [husbandErrors, setHusbandErrors] = useState({});
   const [wifeErrors, setWifeErrors] = useState({});
 
+  const nameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, []);
+
   const validateField = (name, value) => {
     let errorMsg = "";
+
+    const tenYearsAgo = new Date();
+    tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
 
     if (value.trim() === "") {
       errorMsg = "این فیلد نباید خالی باشد";
     } else if (
-      ["Name", "lastName", "fatherName", "GfatherName"].includes(name) &&
+      ["Name", "lastName", "fatherName", "GfatherName", "nation"].includes(name) &&
       /\d/.test(value)
     ) {
       errorMsg = "این فیلد نباید حاوی عدد باشد";
     } else if (name === "NIC" && !/^[\d-_]+$/.test(value)) {
       errorMsg = "این فیلد باید فقط شامل اعداد، خط تیره و زیرخط باشد";
-    } else if (name === "birthDate" && new Date(value) > new Date()) {
-      errorMsg = "تاریخ تولد نباید در آینده باشد";
+    } else if (name === "birthDate" && new Date(value) > tenYearsAgo) {
+      errorMsg = "تاریخ تولد باید حداقل ده سال پیش باشد";
     }
 
     return errorMsg;
@@ -83,9 +96,28 @@ const Record = () => {
 
   const getZoneNumber = (residency) => {
     const zoneMap = {
-      1: 5, 2: 2, 3: 3, 4: 6, 5: 3, 6: 5, 7: 5, 8: 5,
-      9: 2, 10: 2, 11: 4, 12: 1, 13: 3, 14: 3, 15: 6,
-      16: 1, 17: 4, 18: 4, 19: 6, 20: 6, 21: 1, 22: 1,
+      1: 5,
+      2: 2,
+      3: 3,
+      4: 6,
+      5: 3,
+      6: 5,
+      7: 5,
+      8: 5,
+      9: 2,
+      10: 2,
+      11: 4,
+      12: 1,
+      13: 3,
+      14: 3,
+      15: 6,
+      16: 1,
+      17: 4,
+      18: 4,
+      19: 6,
+      20: 6,
+      21: 1,
+      22: 1,
     };
     return zoneMap[residency] || null;
   };
@@ -122,15 +154,13 @@ const Record = () => {
       try {
         const zoneNumber = getZoneNumber(husbandData.residency);
         const coupleData = { husbandData, wifeData, zoneNumber };
-        console.log(coupleData);
         const response = await axios.post(
           "http://localhost:8038/records",
           coupleData
         );
-        setMsg_success(response.data.message);
+        setMsgSuccess(response.data.message);
         setModalVisible(true);
         setFamilyCode(response.data.familyCode);
-
         // Reset form data after successful submission
         setHusbandData({ ...initialData, gender: "مرد", mode: "شوهر" });
         setWifeData({ ...initialData, gender: "زن", mode: "خانم" });
@@ -141,15 +171,33 @@ const Record = () => {
       }
     }
   };
-
+  const handleDownloadPDF = async () => {
+    const input = document.getElementById("form-content");
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      width:900,
+      height: 700,
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("family-code.pdf");
+  };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-red-950 relative">
+    <div
+      dir="rtl"
+      className="min-h-screen flex flex-col items-center justify-center bg-red-950 relative"
+    >
       <LoadingOverlay loading={loading} />
-      <form className="w-full max-w-2xl" onSubmit={handleSubmit}>
+      <form className="items-center w-full max-w-2xl" onSubmit={handleSubmit}>
         <div className="bg-dark-red-800 text-white p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-2xl mb-4 text-center">اطلاعات شوهر</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.keys(husbandData).map((key) => (
+            {Object.keys(husbandData).map((key, index) => (
               <div key={key}>
                 <label className="block text-sm font-bold mb-2">
                   {key === "Name" && "نام"}
@@ -210,21 +258,21 @@ const Record = () => {
                         husbandData,
                         setHusbandErrors,
                         husbandErrors,
-                        true,
                         true
                       )
                     }
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
-                    <option value="">انتخاب کنید</option>
-                    {[...Array(22)].map((_, i) => (
-                      <option key={i} value={i + 1}>
-                        {i + 1}
+                    <option value="">محل سکونت را انتخاب کنید</option>
+                    {Array.from({ length: 22 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>
+                        {n}
                       </option>
                     ))}
                   </select>
                 ) : (
                   <input
+                    ref={index === 0 ? nameInputRef : null} // Focus on the first input
                     type={key === "birthDate" ? "date" : "text"}
                     name={key}
                     value={husbandData[key]}
@@ -237,9 +285,9 @@ const Record = () => {
                         husbandErrors
                       )
                     }
-                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    className={`shadow appearance-none border ${
                       husbandErrors[key] ? "border-red-500" : ""
-                    }`}
+                    } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
                   />
                 )}
                 {husbandErrors[key] && (
@@ -252,10 +300,10 @@ const Record = () => {
           </div>
         </div>
 
-        <div className="bg-dark-red-800 text-white p-6 rounded-lg shadow-md">
+        <div className="bg-dark-red-800 text-white p-6 rounded-lg shadow-md mb-6">
           <h2 className="text-2xl mb-4 text-center">اطلاعات خانم</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.keys(wifeData).map((key) => (
+            {Object.keys(wifeData).map((key, index) => (
               <div key={key}>
                 <label className="block text-sm font-bold mb-2">
                   {key === "Name" && "نام"}
@@ -322,10 +370,10 @@ const Record = () => {
                     }
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
-                    <option value="">انتخاب کنید</option>
-                    {[...Array(22)].map((_, i) => (
-                      <option key={i} value={i + 1}>
-                        {i + 1}
+                    <option value="">محل سکونت را انتخاب کنید</option>
+                    {Array.from({ length: 22 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>
+                        {n}
                       </option>
                     ))}
                   </select>
@@ -343,9 +391,9 @@ const Record = () => {
                         wifeErrors
                       )
                     }
-                    className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    className={`shadow appearance-none border ${
                       wifeErrors[key] ? "border-red-500" : ""
-                    }`}
+                    } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
                   />
                 )}
                 {wifeErrors[key] && (
@@ -358,10 +406,10 @@ const Record = () => {
           </div>
         </div>
 
-        <div className="flex justify-center mt-6">
+        <div className="flex items-center justify-center">
           <button
             type="submit"
-            className="bg-dark-green-500 hover:bg-dark-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             ارسال
           </button>
@@ -369,14 +417,15 @@ const Record = () => {
       </form>
 
       {modalVisible && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <p>{msg_success}</p>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <p className="mb-4">{msgSuccess}</p>
+            <p id="form-content" className="mb-4">{`کد خانواده: ${familyCode}`}</p>
             <button
-              onClick={() => setModalVisible(false)}
-              className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => {setModalVisible(false),handleDownloadPDF()}}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              بستن
+              دانلود کد خانواده
             </button>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LoadingOverlay from "../component/LoadingOverlay.jsx";
 import axios from "axios";
 
-const RegisterChild = () => {
+const RegisterChild = ({ id }) => {
   const initialData = {
     Name: "",
     lastName: "",
@@ -16,6 +16,7 @@ const RegisterChild = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [msgSuccess, setMsgSuccess] = useState("");
+  const [msgError, setMsgError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
   const validateField = (name, value) => {
@@ -44,10 +45,10 @@ const RegisterChild = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     let formIsValid = true;
     const newErrors = {};
-
+  
     Object.keys(formData).forEach((key) => {
       const errorMsg = validateField(key, formData[key]);
       if (errorMsg) {
@@ -55,34 +56,59 @@ const RegisterChild = () => {
         newErrors[key] = errorMsg;
       }
     });
-
+  
     setErrors(newErrors);
-
+  
     if (formIsValid) {
       setLoading(true);
-
+  
       try {
-        const response = await axios.post("http://localhost:8038/children", formData);
-        setMsgSuccess("فرزند با موفقیت ثبت شد");
-        setModalVisible(true); // Show modal
-
-        // Reset form data after successful submission
-        setFormData(initialData);
-
+        const userZone = await axios.get(`http://localhost:8038/users/${id}`);
+        const parentId = formData.parentId;
+        const parentZone = await axios.get(`http://localhost:8038/appointment/${parentId}`);
+  
+        if (userZone.data.zone === parentZone.data.zone) {
+          await axios.post("http://localhost:8038/children", formData);
+          setMsgSuccess("فرزند با موفقیت ثبت شد");
+          setMsgError("");
+          setModalVisible(true);
+  
+          setFormData(initialData);
+  
+          // Hide modal after 5 seconds
+          setTimeout(() => {
+            setModalVisible(false);
+          }, 5000);
+        } else {
+          setMsgError("شما مجاز به افزودن فرزند نیستید");
+          setMsgSuccess("");
+          setModalVisible(true);
+  
+          // Hide modal after 5 seconds
+          setTimeout(() => {
+            setModalVisible(false);
+          }, 5000);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setMsgError("خطا در ثبت اطلاعات");
+        setMsgSuccess("");
+        setModalVisible(true);
+  
         // Hide modal after 5 seconds
         setTimeout(() => {
           setModalVisible(false);
         }, 5000);
-      } catch (error) {
-        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
     }
   };
+  
+  
 
   return (
-    <div className=" flex flex-col items-center p-4 justify-center bg-red-950 relative">
+    <div className="flex flex-col items-center p-4 justify-center bg-red-950 relative">
       <LoadingOverlay loading={loading} />
       <form className="w-full max-w-md bg-red-600 text-white p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-4 text-center">ورود اطلاعات فرزند</h2>
@@ -137,7 +163,8 @@ const RegisterChild = () => {
       {modalVisible && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <p className="text-center text-green-600">{msgSuccess}</p>
+            {msgSuccess && <p className="text-center text-green-600">{msgSuccess}</p>}
+            {msgError && <p className="text-center text-red-600">{msgError}</p>}
           </div>
         </div>
       )}

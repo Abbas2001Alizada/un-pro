@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const SendToDatabase = () => {
+const SendToDatabase = ({ id }) => {
   const [Name, setName] = useState("");
   const [NIC, setNIC] = useState("");
   const [records, setRecords] = useState(null);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
+  const [notAllowedMessageVisible, setNotAllowedMessageVisible] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,23 +15,40 @@ const SendToDatabase = () => {
     const mode = "شوهر";
 
     try {
-      const response = await axios.post(
-        "http://localhost:8038/records/findFamily",
+      const userZone = await axios.get(`http://localhost:8038/users/${id}`);
+      const res = await axios.post(
+        "http://localhost:8038/appointment/searchBySpecification",
         {
-          Name,
+          name: Name,
           NIC,
           mode,
         }
       );
+      
+      if (userZone.data.zone === res.data.zone) {
+        const response = await axios.post(
+          "http://localhost:8038/records/findFamily",
+          {
+            Name,
+            NIC,
+            mode,
+          }
+        );
 
-      // Handle success response
-      setRecords(response.data);
-      setMessage("Data received successfully");
-      setMessageType("success");
-      console.log("Data received successfully:", response.data);
+        setRecords(response.data);
+        setMessage("داده با موفقیت دریافت شد");
+        setMessageType("success");
+      } else {
+        // Show "not allowed" message for 5 seconds
+        setNotAllowedMessageVisible(true);
+        setTimeout(() => {
+          setNotAllowedMessageVisible(false);
+        }, 5000);
+        
+        setMessage(null); // Clear previous messages
+      }
     } catch (error) {
-      // Handle error response
-      setMessage("Error sending data");
+      setMessage("خطا در ارسال داده");
       setMessageType("error");
       console.error("Error sending data:", error);
     }
@@ -79,10 +97,22 @@ const SendToDatabase = () => {
         </button>
       </form>
 
+      {notAllowedMessageVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-red-600">
+            <p>شما مجاز به انجام این عمل نیستید</p>
+            <button
+              onClick={() => setNotAllowedMessageVisible(false)}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              بستن
+            </button>
+          </div>
+        </div>
+      )}
+
       {message && (
-        <div
-          className={`fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75`}
-        >
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div
             className={`bg-white p-6 rounded-lg shadow-lg ${
               messageType === "success" ? "text-green-600" : "text-red-600"
@@ -90,7 +120,9 @@ const SendToDatabase = () => {
           >
             <p>{message}</p>
             <button
-              onClick={() => setMessage(null)}
+              onClick={() => {
+                setMessage(null);
+              }}
               className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md"
             >
               بستن
@@ -100,9 +132,9 @@ const SendToDatabase = () => {
       )}
 
       {records && (
-        <div className="mt-8 w-full max-w-4xl" >
+        <div className="mt-8 w-full max-w-4xl">
           <Table
-          className=" align-middle text-center"
+            className="align-middle text-center"
             person={records.husband.name}
             fatherName={records.husband.fatherName}
             NIC={records.husband.NIC}
@@ -110,7 +142,7 @@ const SendToDatabase = () => {
           />
           {records.wife && (
             <Table
-              className=" align-middle text-center"
+              className="align-middle text-center"
               person={records.wife.name}
               fatherName={records.wife.fatherName}
               NIC={records.wife.NIC}
@@ -120,7 +152,7 @@ const SendToDatabase = () => {
           {records.witnesses &&
             records.witnesses.map((wit, index) => (
               <Table
-                className=" align-middle text-center"
+                className="align-middle text-center"
                 key={index}
                 person={wit.name}
                 fatherName={wit.fatherName}
@@ -131,7 +163,7 @@ const SendToDatabase = () => {
           {records.children &&
             records.children.map((child, index) => (
               <Table
-                className=" align-middle text-center"
+                className="align-middle text-center"
                 key={index}
                 person={child.name}
                 fatherName={child.fatherName}

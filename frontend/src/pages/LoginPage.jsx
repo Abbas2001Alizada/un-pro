@@ -18,11 +18,16 @@ const LoginPage = () => {
       });
       const userId = response.data.userId;
       const userRole = response.data.userRole;
-      if (userRole === "مدیر") {
+      const usermode = response.data.mode;
+      if(usermode==="deactive"){setError("این حساب غیر فعال است")}
+      if (usermode==="active") {
+       
+      if (userRole === "مدیر" ) {
         navigate(`/AdminDashboard/${userId}`);
       } else {
         navigate(`/UserDashboard/${userId}`);
-      }
+      } 
+    }
     } catch (error) {
       setError("اعتبارنامه نامعتبر است. لطفا دوباره امتحان کنید.");
     }

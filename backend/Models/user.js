@@ -34,6 +34,10 @@ const User = sequelize.define('User', {
     zone: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    mode: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 },{
         timestamps: true

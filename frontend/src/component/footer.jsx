@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-red-950 text-white py-8 px-8">
       <div className=" mx-auto flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
@@ -128,7 +129,8 @@ const Footer = () => {
           </a>
         </div>
         <p className="text-center text-sm mt-4">
-          2024 Your Company Name. All rights reserved.
+          {currentYear} Alizada.
+          <p>.تمامی حقوق محفوظ است</p>
         </p>
       </div>
     </footer>

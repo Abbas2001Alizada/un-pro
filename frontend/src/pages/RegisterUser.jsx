@@ -8,7 +8,8 @@ const AddUser = ({ id }) => {
     Password: "",
     email: "",
     role: "",
-    zone: ""
+    zone: "",
+    mode:"active"
   });
 
   const [errors, setErrors] = useState({});
@@ -65,7 +66,8 @@ const AddUser = ({ id }) => {
         Password: "",
         email: "",
         role: "",
-        zone: form.zone // Maintain zone value after form reset
+        zone: form.zone, // Maintain zone value after form reset
+        mode:""
       });
       setErrors({});
       setTimeout(() => {

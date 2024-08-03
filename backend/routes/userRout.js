@@ -9,7 +9,7 @@ const router = Router();
 // Define routes
 router.get('/', getAllUsers);
 router.post('/createUser', createUser);
-router.post('/delete',deleteUser);
+router.delete('/:id',deleteUser);
 router.post('/login', authenticateUser);
 router.get('/:id', getUserDetails);
 router.put('/:id', upload.single("image"), updateUser);

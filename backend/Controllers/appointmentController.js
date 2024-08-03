@@ -2,6 +2,28 @@ import Appointment from '../Models/appointment.js';
 import records from '../Models/records.js';
 import Op from 'sequelize'
 
+
+//function to get one appointment based on id
+
+export const getAppointment= async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const appointment = await Appointment.findOne({
+      where: {  id },
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'No appointment found for thisid' });
+    }
+
+    return res.status(200).json(appointment);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error retrieving appointments', error: error.message });
+  }
+};
+
 //functions for reporting
 
 const getTimeRangeCondition = (timeRange) => {
@@ -99,7 +121,7 @@ export const searchBySpecification = async (req, res) => {
     // Find the appointment using the retrieved id
     const appointment = await Appointment.findOne({
       where: { id: record.coupleId },
-      attributes: ['state', 'appointmentTime','familyCode']
+      attributes: ['state', 'appointmentTime','familyCode','zone']
     });
 
     if (!appointment) {
@@ -109,7 +131,8 @@ export const searchBySpecification = async (req, res) => {
       state: appointment.state,
       appointmentTime: appointment.appointmentTime,
       id:record.coupleId,
-      familyCode:appointment.familyCode
+      familyCode:appointment.familyCode,
+      zone:appointment.zone,
     });
   } catch (error) {
     console.error('Error fetching appointment by specification:', error);
@@ -144,7 +167,8 @@ export const searchByFamilyCode = async (req, res) => {
       state: appointment.state,
       appointmentTime: appointment.appointmentTime,
       id:appointment.id,
-      familyCode:appointment.familyCode
+      familyCode:appointment.familyCode,
+      zone:appointment.zone
     });
   } catch (error) {
     console.error('Error fetching appointment by family code:', error);

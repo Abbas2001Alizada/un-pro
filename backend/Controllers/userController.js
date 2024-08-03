@@ -10,7 +10,7 @@ export const authenticateUser = async (req, res) => {
   try {
     // Find the user by username
     const user = await User.findOne({
-      attributes: ['id', 'password', 'role'],
+      attributes: ['id', 'password', 'role','mode'],
       where: { username },
     });
 
@@ -28,7 +28,7 @@ export const authenticateUser = async (req, res) => {
     }
 
     // If authentication is successful, return the user ID and role
-    res.json({ userId: user.id, userRole: user.role });
+    res.json({ userId: user.id, userRole: user.role,mode:user.mode });
   } catch (error) {
     console.error('خطا در احراز هویت:', error);
     res.status(500).json({ error: 'خطای سرور' });
@@ -36,7 +36,7 @@ export const authenticateUser = async (req, res) => {
 };
 // Controller function to create a new user
 export const createUser = async (req, res) => {
-  const {name, userName, Password, email, role,zone } = req.body;
+  const { name, userName, Password, email, role, zone,mode } = req.body;
 
   // Basic validation
   if (!name || !userName || !Password || !email || !role) {
@@ -53,7 +53,7 @@ export const createUser = async (req, res) => {
 
   try {
     // Check if username already exists
-    const existingUser = await User.findOne({ where: { username:userName } });
+    const existingUser = await User.findOne({ where: { username: userName } });
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
     }
@@ -64,11 +64,11 @@ export const createUser = async (req, res) => {
     // Create the new user record
     const newUser = await User.create({
       name,
-      username:userName,
+      username: userName,
       password: hashedPassword,
       email,
       role,
-      zone
+      zone,mode
     });
 
     // Send success response
@@ -85,7 +85,7 @@ export const getUserDetails = async (req, res) => {
 
   try {
     const user = await User.findByPk(userId, {
-      attributes: ['name', 'username', 'password', 'email', 'image','role','zone'],
+      attributes: ['name', 'username', 'password', 'email', 'image', 'role', 'zone'],
     });
 
     if (!user) {
@@ -116,7 +116,7 @@ export const updateUser = async (req, res) => {
 
   try {
     const user = await User.findByPk(req.params.id);
-   
+
     if (image) {
       if (fs.existsSync(`uploads/${user.image}`)) {
         fs.unlinkSync(`uploads/${user.image}`);
@@ -145,44 +145,22 @@ export const updateUser = async (req, res) => {
   // });
 };
 
-// export const deleteUser = async (req, res) => {
-//   try {
-//     const { deleteid,id } = req.params;
-//     if (deleteid==id){
-//     const deleted = await User.destroy({
-//       where: { deleteid }
-//     });
-//     if (deleted) {
-//       res.status(204).send();
-//     } else {
-//       res.status(404).json({ error: 'User not found' });
-//     }}
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 export const deleteUser = async (req, res) => {
-  const {form} = req.body;
-  const { adminId, userId, deleteId } = form;
+  const { id } = req.params;
 
   try {
-    if (adminId === userId) {
-      const deleted = await User.destroy({
-        where: { id:deleteId}
-      });
+    console.log(id);
+    const user = await User.findByPk(id);
 
-      if (deleted) {
-        return res.status(200).json({ message: 'کاربر حذف شد' });
-      } else {
-        return res.status(404).json({ message: 'کاربر پیدا نشد' });
-      }
-    } else {
-      return res.status(403).json({ message: 'مربوط زون دیگر است' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    await user.update({mode:'deactive'});
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'خطا' });
-    console.log(adminId, userId, deleteId );
+    console.log(id);
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

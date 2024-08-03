@@ -57,6 +57,7 @@ const Reporting = () => {
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
     pdf.save("marriage-form.pdf");
   };
+ 
 
   return (
     <div className="p-4">

@@ -14,13 +14,12 @@ const SearchAppointments = () => {
 
   return (
     <div>
-      <button
-        onClick={openPopup}
-        className="p-2 rounded-md"
-      >
+      <button onClick={openPopup} className="p-2 rounded-md">
         جستجو
       </button>
-      {isPopupOpen && <CheckForm onClose={closePopup} setErrorMessage={setErrorMessage} />}
+      {isPopupOpen && (
+        <CheckForm onClose={closePopup} setErrorMessage={setErrorMessage} />
+      )}
       {errorMessage && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-red-950 rounded-lg shadow-lg p-6 w-full max-w-md text-white text-center">
@@ -91,16 +90,28 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
           );
 
           if (response.data.state === "pending") {
-            navigate("/pending",{
-              state:{Id:response.data.id,familyCode:response.data.familyCode},
+            navigate("/pending", {
+              state: {
+                Id: response.data.id,
+                familyCode: response.data.familyCode,
+              },
             });
           } else if (response.data.state === "processing") {
             navigate("/processing", {
-              state: {id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state,familyCode:response.data.familyCode },
+              state: {
+                id: response.data.id,
+                appointmentTime: response.data.appointmentTime,
+                state: response.data.state,
+                familyCode: response.data.familyCode,
+                zone: response.data.zone,
+              },
             });
-          }else if (response.data.state === "done") {
+          } else if (response.data.state === "done") {
             navigate("/done", {
-              state: {Id:response.data.id,familyCode:response.data.familyCode },
+              state: {
+                Id: response.data.id,
+                familyCode: response.data.familyCode,
+              },
             });
           }
         } else if (searchType === "specification") {
@@ -111,21 +122,34 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
               NIC: formData.NIC,
               mode: formData.mode,
             }
-          );
+          ); 
           if (response.data.state === "pending") {
-            navigate("/pending",{
-              state:{Id:response.data.id,familyCode:response.data.familyCode},
+            navigate("/pending", {
+              state: {
+                Id: response.data.id,
+                familyCode: response.data.familyCode,
+              },
             });
           } else if (response.data.state === "processing") {
             navigate("/processing", {
-              state: {familyCode:response.data.familyCode,id:response.data.id, appointmentTime: response.data.appointmentTime, state: response.data.state },
+              state: {
+                familyCode: response.data.familyCode,
+                id: response.data.id,
+                appointmentTime: response.data.appointmentTime,
+                state: response.data.state,
+                zone: response.data.zone,
+              },
             });
-          }else if (response.data.state === "done") {
+          } else if (response.data.state === "done") {
             navigate("/done", {
-              state: {familyCode:response.data.familyCode,Id:response.data.id },
+              state: {
+                familyCode: response.data.familyCode,
+                Id: response.data.id,
+              },
             });
           }
         }
+       
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setErrorMessage("معلومات مورد نظر یافت نشد");
@@ -141,13 +165,21 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
       <div className="bg-red-950 rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between mb-4">
           <button
-            className={`px-4 py-2 ${searchType === "familyCode" ? "bg-blue-500 border-2 border-green-300 rounded text-white" : "bg-gray-200"} rounded`}
+            className={`px-4 py-2 ${
+              searchType === "familyCode"
+                ? "bg-blue-500 border-2 border-green-300 rounded text-white"
+                : "bg-gray-200"
+            } rounded`}
             onClick={() => setSearchType("familyCode")}
           >
             جستجو براساس کود خانواده
           </button>
           <button
-            className={`px-4 py-2 ${searchType === "specification" ? "bg-blue-500 border-2 border-green-300 rounded text-white" : "bg-gray-200"} rounded`}
+            className={`px-4 py-2 ${
+              searchType === "specification"
+                ? "bg-blue-500 border-2 border-green-300 rounded text-white"
+                : "bg-gray-200"
+            } rounded`}
             onClick={() => setSearchType("specification")}
           >
             جستجو براساس مشخصات
@@ -163,10 +195,14 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
                 name="familyCode"
                 value={formData.familyCode}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border text-black ${errors.familyCode ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
+                className={`mt-1 block w-full border text-black ${
+                  errors.familyCode ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
               {errors.familyCode && (
-                <p className="text-red-500 text-xs italic">{errors.familyCode}</p>
+                <p className="text-red-500 text-xs italic">
+                  {errors.familyCode}
+                </p>
               )}
             </div>
             <button
@@ -185,7 +221,9 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border text-black ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
+                className={`mt-1 block w-full border text-black ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
               {errors.name && (
                 <p className="text-red-500 text-xs italic">{errors.name}</p>
@@ -198,7 +236,9 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
                 name="NIC"
                 value={formData.NIC}
                 onChange={handleInputChange}
-                className={`mt-1 block w-full border text-black ${errors.NIC ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
+                className={`mt-1 block w-full border text-black ${
+                  errors.NIC ? "border-red-500" : "border-gray-300"
+                } rounded-md p-2`}
               />
               {errors.NIC && (
                 <p className="text-red-500 text-xs italic">{errors.NIC}</p>

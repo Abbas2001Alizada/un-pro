@@ -76,7 +76,7 @@ const AddminDashboard = () => {
             <li
               className={`p-2 cursor-pointer flex ${selectedOption === "Checking" && "bg-red-600"}`}
               onClick={() => setSelectedOption("Checking")}
-            ><Search />
+            ><Search/>
             </li>
             <li
               className={`p-2 cursor-pointer mt-2 ${selectedOption === "AddWitness" && "bg-red-600"}`}
@@ -114,22 +114,22 @@ const AddminDashboard = () => {
           ) : selectedOption === 'AddWitness' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">اضافه نمودن شاهد</h2>
-              <RegisterWitness />
+              <RegisterWitness id={id}/>
             </section>
           ) : selectedOption === 'done process' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">تحویل نکاح خط</h2>
-              <Completion />
+              <Completion id={id}/>
             </section>
           ) : selectedOption === 'findCouple' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">جستجوی خانواده</h2>
-              <CoupleFinder />
+              <CoupleFinder id={id}/>
             </section>
           ) : selectedOption === 'AddChild' ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">اضافه نمودن فرزند</h2>
-              <RegisterChild />
+              <RegisterChild id={id}/>
             </section>
           ) : (
             <section></section>

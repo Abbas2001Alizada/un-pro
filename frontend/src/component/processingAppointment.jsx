@@ -5,11 +5,12 @@ import FormDownload from './formDownload';
 
 const ProcessingAppointment = () => {
   const Location=useLocation();
-  const {id,appointmentTime,state,familyCode}=Location.state;
+  const {id,appointmentTime,state,familyCode,zone}=Location.state;
   let familyId=id;
   let time=appointmentTime;;
   time=time.split('T')[0];
   let FamilyCode=familyCode;
+  let Zone=zone;
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-950">
       <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -18,8 +19,9 @@ const ProcessingAppointment = () => {
         <p className="text-black">زمان ملاقات شما: {time}</p>
         <p className="text-black">  آي ‌دی شما:{familyId}</p>
         <p className="text-black">کود فامیل:{FamilyCode}</p>
+        <p className="text-black">زون:{Zone}</p>
        <div>  <a href="MarriageRequestForm.html" download>
-       <FormDownload  familyId={familyId}/>
+       <FormDownload  familyId={familyId} zone={zone}/>
     </a>
 </div>
       </div>

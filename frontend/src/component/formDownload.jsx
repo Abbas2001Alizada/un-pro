@@ -4,7 +4,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-const FormDownload = ({ familyId }) => {
+const FormDownload = ({ familyId,zone }) => {
   const [id, setid] = useState(familyId);
   const [formData, setFormData] = useState({
     groomName: "",
@@ -64,7 +64,7 @@ const FormDownload = ({ familyId }) => {
   return (
     <div
       dir="rtl"
-      className="form-container flex flex-col p-8 bg-gray-100 min-h-screen"
+      className="form-container items-center flex flex-col p-8 bg-gray-100 min-h-screen"
     >
       <div
         id="form-content"
@@ -74,11 +74,11 @@ const FormDownload = ({ familyId }) => {
           <h2 className="text-2xl font-bold mb-2">درخواست نکاح‌خط</h2>
           <h3 className="text-xl font-semibold">شهرت درخواست کنندگان</h3>
         </div>
-        <p className="mb-4 text-right">به مقام محترم محکمه وثایق شهر کابل</p>
+        <p className="mb-4 text-right">به مقام محترم محکمه وثایق شهر کابل زون: {zone}</p>
         <p className="mb-4 text-right">
-          ما دو نفر هر یک {formData.groomName} ولد {formData.groomFatherName}{" "}
-          ولدیت {formData.groomGfatherName} باشنده {formData.groomAddress} و{" "}
-          {formData.brideName} ولد {formData.brideFatherName} ولدیت{" "}
+          ما دو نفر هر یک {formData.groomName} ولد/بنت {formData.groomFatherName}{" "}
+          ولدیت {formData.groomGfatherName} باشنده {formData.groomAddress} و
+          {formData.brideName} ولد/بنت {formData.brideFatherName} ولدیت{" "}
           {formData.brideGfatherName} باشنده {formData.brideAddress} در حال
           داشتن اهلیت کامل حقوقی به رضا و رغبت خود میخواهیم ازدواج نماییم،
           خواهشمندیم در طی مراحل و توثیق عقد نکاح ما به شعبه مربوط خویش هدایت
@@ -171,9 +171,9 @@ const FormDownload = ({ familyId }) => {
       </div>
       <button
         onClick={handleDownloadPDF}
-        className="mt-8 px-6 py-3 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition duration-300"
+        className="mt-8 w-32 px-6 py-3 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition duration-300"
       >
-        Download Form Data as PDF
+       دانلود فورم
       </button>
     </div>
   );
