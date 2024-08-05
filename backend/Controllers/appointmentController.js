@@ -1,16 +1,16 @@
 import Appointment from '../Models/appointment.js';
 import records from '../Models/records.js';
-import Op from 'sequelize'
+import Op, { Sequelize } from 'sequelize'
 
 
 //function to get one appointment based on id
 
-export const getAppointment= async (req, res) => {
+export const getAppointment = async (req, res) => {
   const { id } = req.params;
 
   try {
     const appointment = await Appointment.findOne({
-      where: {  id },
+      where: { id },
     });
 
     if (!appointment) {
@@ -87,9 +87,9 @@ export const getAppointmentReport = async (req, res) => {
       pending: pendingCount,
       processing: processingCount,
       done: doneCount,
-    }); 
+    });
 
-  } catch (error) {   
+  } catch (error) {
     console.error('Error fetching report data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -103,15 +103,15 @@ export const searchBySpecification = async (req, res) => {
 
   try {
     //validation
-    if (!name ||!mode ||!NIC) {
+    if (!name || !mode || !NIC) {
       return res.status(400).json({ message: 'All fields are required', });
     }
     // Find the record in the records table
     const record = await records.findOne({
       where: {
-        Name:name,
-        mode:mode,
-        NIC:NIC
+        Name: name,
+        mode: mode,
+        NIC: NIC
       },
       attributes: ['coupleId']
     });
@@ -121,7 +121,7 @@ export const searchBySpecification = async (req, res) => {
     // Find the appointment using the retrieved id
     const appointment = await Appointment.findOne({
       where: { id: record.coupleId },
-      attributes: ['state', 'appointmentTime','familyCode','zone']
+      attributes: ['state', 'appointmentTime', 'familyCode', 'zone']
     });
 
     if (!appointment) {
@@ -130,9 +130,9 @@ export const searchBySpecification = async (req, res) => {
     return res.json({
       state: appointment.state,
       appointmentTime: appointment.appointmentTime,
-      id:record.coupleId,
-      familyCode:appointment.familyCode,
-      zone:appointment.zone,
+      id: record.coupleId,
+      familyCode: appointment.familyCode,
+      zone: appointment.zone,
     });
   } catch (error) {
     console.error('Error fetching appointment by specification:', error);
@@ -166,9 +166,9 @@ export const searchByFamilyCode = async (req, res) => {
     return res.json({
       state: appointment.state,
       appointmentTime: appointment.appointmentTime,
-      id:appointment.id,
-      familyCode:appointment.familyCode,
-      zone:appointment.zone
+      id: appointment.id,
+      familyCode: appointment.familyCode,
+      zone: appointment.zone
     });
   } catch (error) {
     console.error('Error fetching appointment by family code:', error);
@@ -176,7 +176,7 @@ export const searchByFamilyCode = async (req, res) => {
   }
 };
 export const updateAppointments = async (req, res) => {
-  const { amount,zone} = req.body;
+  const { amount, zone } = req.body;
 
   if (!amount || isNaN(amount) || amount <= 0) {
     return res.status(400).json({ error: 'Invalid amount specified' });
@@ -184,7 +184,7 @@ export const updateAppointments = async (req, res) => {
 
   try {
     const appointments = await Appointment.findAll({
-      where: { state: 'pending',zone:zone },
+      where: { state: 'pending', zone: zone },
       order: [['id', 'ASC']],
       limit: parseInt(amount, 10)
     });
@@ -224,5 +224,93 @@ export const deleteAppointment = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const getReportData = async (req, res) => {
+  const { zone, timeRange } = req.body;
+
+  const date = new Date();
+  let startDate;
+
+  // Calculate the start date based on the time range
+  switch (timeRange) {
+    case 'daily':
+      startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      break;
+    case 'weekly':
+      startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 7);
+      break;
+    case 'monthly':
+      startDate = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate());
+      break;
+    default:
+      return res.status(400).json({ error: 'Invalid time range' });
+  }
+
+  // Format the start date to 'YYYY-MM-DD HH:MM:SS'
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const formattedStartDate = formatDate(startDate);
+
+  try {
+    // Logging startDate for debugging
+    console.log(`Formatted Start Date: ${formattedStartDate}`);
+
+    // Fetch count of pending appointments
+    const pendingCount = await Appointment.count({
+      where: {
+        zone: zone,
+        state: 'pending',
+        // createdAt: {
+        //   [Op.gte]: startDate
+        //   ,
+        // },
+      },
+    });
+
+    // Fetch count of processing appointments
+    const processingCount = await Appointment.count({
+      where: {
+        zone: zone,
+        state: 'processing',
+        // Uncomment and use the appropriate field if necessary
+        // appointmentTime: {
+        //   [Op.gt]: formattedStartDate
+
+        // },
+      },
+    });
+
+    // Fetch count of done appointments
+    const doneCount = await Appointment.count({
+      where: {
+        zone: zone,
+        state: 'done',
+        // Uncomment and use the appropriate field if necessary
+        // updatedAt: {
+        //   [Op.gt]: formattedStartDate
+
+        // },
+      },
+    });
+
+    // Logging counts for debugging
+    console.log(`Pending: ${pendingCount}, Processing: ${processingCount}, Done: ${doneCount}`);
+
+    // Sending the response with the counts
+    res.json({ pending: pendingCount, processing: processingCount, done: doneCount });
+  } catch (error) {
+    // Logging the error
+    console.error('Error fetching report data:', error);
+    res.status(500).json({ error: 'An error occurred while fetching report data' });
   }
 };

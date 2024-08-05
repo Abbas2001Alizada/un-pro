@@ -3,37 +3,41 @@ import fs from 'fs'
 import bcrypt from 'bcrypt';
 
 
-// Authenticate user based on username and password
-export const authenticateUser = async (req, res) => {
+export const login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
     // Find the user by username
-    const user = await User.findOne({
-      attributes: ['id', 'password', 'role','mode'],
-      where: { username },
-    });
+    const user = await User.findOne({ where: { username } });
 
-    // If user not found, return an error
     if (!user) {
-      return res.status(404).json({ error: 'اطلاعات ورود نامعتبر است' });
+      return res.status(401).json({ message: 'نام کاربری یا رمز عبور نادرست است.' });
     }
 
-    // Compare the provided password with the stored hashed password
+    // Compare the password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    // If the password is invalid, return an error
     if (!isPasswordValid) {
-      return res.status(404).json({ error: 'اطلاعات ورود نامعتبر است' });
+      return res.status(401).json({ message: 'نام کاربری یا رمز عبور نادرست است.' });
     }
 
-    // If authentication is successful, return the user ID and role
-    res.json({ userId: user.id, userRole: user.role,mode:user.mode });
+    // Check if the user account is active
+    if (user.mode === 'deactive') {
+      return res.status(403).json({ message: 'این حساب غیر فعال است.' });
+    }
+
+    // Send the response with user details
+    res.status(200).json({
+      userId: user.id,
+      userRole: user.role,
+      userMode: user.mode,
+      message: 'ورود موفقیت آمیز بود.'
+    });
   } catch (error) {
-    console.error('خطا در احراز هویت:', error);
-    res.status(500).json({ error: 'خطای سرور' });
+    res.status(500).json({ message: 'خطایی رخ داد. لطفا دوباره تلاش کنید.' });
   }
 };
+
 // Controller function to create a new user
 export const createUser = async (req, res) => {
   const { name, userName, Password, email, role, zone,mode } = req.body;
@@ -164,3 +168,9 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+     
+
+
+
+
+

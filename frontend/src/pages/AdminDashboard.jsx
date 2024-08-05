@@ -112,7 +112,7 @@ const AdminDashboard = () => {
           ) :selectedOption==='report'?(
             <section>
               <h2 className="text-xl font-semibold mb-4">گزارشات</h2>
-              <Reporting />
+              <Reporting id={id}/>
             </section>
           ):(<section></section>)}
         </main>

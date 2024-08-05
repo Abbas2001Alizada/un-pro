@@ -168,7 +168,7 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
             className={`px-4 py-2 ${
               searchType === "familyCode"
                 ? "bg-blue-500 border-2 border-green-300 rounded text-white"
-                : "bg-gray-200"
+                : "bg-gray-200 text-green-800"
             } rounded`}
             onClick={() => setSearchType("familyCode")}
           >
@@ -178,7 +178,7 @@ const CheckForm = ({ onClose, setErrorMessage }) => {
             className={`px-4 py-2 ${
               searchType === "specification"
                 ? "bg-blue-500 border-2 border-green-300 rounded text-white"
-                : "bg-gray-200"
+                : "bg-gray-200 text-green-800"
             } rounded`}
             onClick={() => setSearchType("specification")}
           >

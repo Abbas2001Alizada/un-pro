@@ -10,6 +10,7 @@ import sequelize from './dbconnection.js';
 import path from 'path'
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 const port = 8038
 const app = express()
 
@@ -17,11 +18,13 @@ const app = express()
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors());
+
 // Middleware to serve static files (images)
 const uploadsDirectory = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsDirectory));
-
-app.use(cors());
 app.use(bodyParser.json())
 app.use('/users', userRout)
 app.use('/records', recordRout)

@@ -1,3 +1,4 @@
+// LoginPage.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -18,27 +19,26 @@ const LoginPage = () => {
       });
       const userId = response.data.userId;
       const userRole = response.data.userRole;
-      const usermode = response.data.mode;
-      if(usermode==="deactive"){setError("این حساب غیر فعال است")}
-      if (usermode==="active") {
-       
-      if (userRole === "مدیر" ) {
-        navigate(`/AdminDashboard/${userId}`);
-      } else {
-        navigate(`/UserDashboard/${userId}`);
-      } 
-    }
+      const userMode = response.data.userMode;
+      if (userMode === "deactive") {
+        setError("این حساب غیر فعال است");
+      } else if (userMode === "active") {
+        if (userRole === "مدیر") {
+          navigate(`/AdminDashboard/${userId}`);
+        } else {
+          navigate(`/UserDashboard/${userId}`);
+        }
+      }
     } catch (error) {
       setError("اعتبارنامه نامعتبر است. لطفا دوباره امتحان کنید.");
     }
   };
 
   return (
-    <div className={`flex items-center justify-center text-right  min-h-screen h-full  shadow-md bg-gradient-to-r from-red-950 via-red-700 to-red-950 rounded p-3`}>
-
+    <div className="flex items-center justify-center text-right min-h-screen h-full shadow-md bg-gradient-to-r from-red-950 via-red-700 to-red-950 rounded p-3">
       <form
         onSubmit={handleLogin}
-        className="relative z-10 w-full  max-w-sm mx-auto bg-red-950 p-4 rounded shadow-md"
+        className="relative z-10 w-full max-w-sm mx-auto bg-red-950 p-4 rounded shadow-md"
       >
         <h2 className="text-white text-2xl mb-4 text-center">صفحه ورود</h2>
         <div className="mb-4">
@@ -71,18 +71,17 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div className=" flex">
+        <div className="flex">
           <button
             type="submit"
-            className=" flex-2/3 bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            className="flex-2/3 bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
           >
             ورود
           </button>
           <Link to="/">
-            {" "}
             <button
               type="button"
-              className=" flex-1/3 bg-white text-black hover:bg-green-900  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              className="flex-1/3 bg-white text-black hover:bg-green-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
             >
               برگشت
             </button>
@@ -95,3 +94,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
