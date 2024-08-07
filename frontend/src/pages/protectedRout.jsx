@@ -1,12 +1,12 @@
-// ProtectedRoute.jsx
+// ProtectedRoute.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import LoginPage from './LoginPage';
+import { useAuth } from '../pages/authContext';
 
-const ProtectedRoute = ({ element: Component, ...rest }) => {
-  const token = localStorage.getItem('token');
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
 
-  return token ? <Component {...rest} /> : <Navigate element={<LoginPage/>}/>;
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

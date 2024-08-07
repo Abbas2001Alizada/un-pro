@@ -1,6 +1,7 @@
 import User from "../Models/user.js";
 import fs from 'fs'
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 
 export const login = async (req, res) => {
@@ -13,7 +14,6 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'نام کاربری یا رمز عبور نادرست است.' });
     }
-
     // Compare the password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -25,9 +25,14 @@ export const login = async (req, res) => {
     if (user.mode === 'deactive') {
       return res.status(403).json({ message: 'این حساب غیر فعال است.' });
     }
+    
+    const secretKey = 'abbas'; // Store this in an environment variable
+    const payload = { userId: user.id, userRole: user.role, userMode: user.mode };
+    const token=jwt.sign(payload,secretKey,{expiresIn:'1h'})
 
     // Send the response with user details
     res.status(200).json({
+      token,
       userId: user.id,
       userRole: user.role,
       userMode: user.mode,

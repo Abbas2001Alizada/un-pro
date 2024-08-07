@@ -1,18 +1,37 @@
 import axios from "axios";
 import logo from "../../public/photoes/logo.png";
 import React, { useEffect, useState } from "react";
-import { Link, useMatch } from "react-router-dom";
+import { Link, Navigate, useMatch, useNavigate } from "react-router-dom";
 import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import CreateAppointment from "./CreateAppointment";
 import Reporting from "./Report";
+import LoginPage from "./LoginPage";
 
 const AdminDashboard = () => {
-  const match = useMatch('/AdminDashboard/:id');
-  const id = match.params.id;
+  const token = sessionStorage.getItem("token");
+  const match = useMatch("/AdminDashboard/:id");
+  const id = sessionStorage.getItem("id");
   const [previewUrl, setPreviewUrl] = useState();
   const [selectedOption, setSelectedOption] = useState("today");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const useLogout = () => {
+
+    const logout = () => {
+      // Remove the token from localStorage or cookies
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("id");
+
+      // Redirect to the login page
+      navigate("/");
+    };
+
+    return logout;
+  };
+  if (!token) {
+     navigate("/login")
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,7 +40,7 @@ const AdminDashboard = () => {
         const { image } = response.data;
         setPreviewUrl(`http://localhost:8038/uploads/${image}`);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
 
@@ -29,9 +48,15 @@ const AdminDashboard = () => {
   }, [id]);
 
   return (
-    <div dir="rtl" className="min-h-screen flex flex-col bg-gradient-to-br from-red-900 via-red-700 to-red-400">
+    <div
+      dir="rtl"
+      className="min-h-screen flex flex-col bg-gradient-to-br from-red-900 via-red-700 to-red-400"
+    >
       {/* Navbar */}
-      <nav dir="ltr" className="bg-red-950 text-white p-4 flex justify-between items-center">
+      <nav
+        dir="ltr"
+        className="bg-red-950 text-white p-4 flex justify-between items-center"
+      >
         <div className="text-xl font-bold">
           <img src={logo} alt="Logo" className=" size-14" />
         </div>
@@ -50,10 +75,16 @@ const AdminDashboard = () => {
           />
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
-              <Link to={`/profile/${id}`} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <Link
+                to={`/profile/${id}`}
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
                 <button>بازدید از پروفایل</button>
               </Link>
-              <Link to='/' className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <Link
+                onClick={useLogout()}
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
                 <button>خروج از دشبورد</button>
               </Link>
             </div>
@@ -66,25 +97,33 @@ const AdminDashboard = () => {
         <aside className="bg-red-700 text-white w-full md:w-1/4 p-4">
           <ul>
             <li
-              className={`p-2 cursor-pointer ${selectedOption === "CreateAppointment" && "bg-red-600"}`}
+              className={`p-2 cursor-pointer ${
+                selectedOption === "CreateAppointment" && "bg-red-600"
+              }`}
               onClick={() => setSelectedOption("CreateAppointment")}
             >
-              نوبت دهی 
+              نوبت دهی
             </li>
             <li
-              className={`p-2 cursor-pointer ${selectedOption === "CreateAccount" && "bg-red-600"}`}
+              className={`p-2 cursor-pointer ${
+                selectedOption === "CreateAccount" && "bg-red-600"
+              }`}
               onClick={() => setSelectedOption("CreateAccount")}
             >
               ایجاد حساب کاربری جدید
             </li>
             <li
-              className={`p-2 cursor-pointer mt-2 ${selectedOption === "DeleteAccount" && "bg-red-600"}`}
+              className={`p-2 cursor-pointer mt-2 ${
+                selectedOption === "DeleteAccount" && "bg-red-600"
+              }`}
               onClick={() => setSelectedOption("DeleteAccount")}
             >
               حذف حساب کاربری
             </li>
             <li
-              className={`p-2 cursor-pointer mt-2 ${selectedOption === "report" && "bg-red-600"}`}
+              className={`p-2 cursor-pointer mt-2 ${
+                selectedOption === "report" && "bg-red-600"
+              }`}
               onClick={() => setSelectedOption("report")}
             >
               گزارشات
@@ -96,25 +135,29 @@ const AdminDashboard = () => {
         <main className="flex-grow bg-gray-100 p-4">
           {selectedOption === "CreateAccount" ? (
             <section className="dir-rtl">
-              <h2 className="text-xl font-semibold mb-4">ایجاد حساب کاربری جدید</h2>
-              <RegisterUser id={id}/>
+              <h2 className="text-xl font-semibold mb-4">
+                ایجاد حساب کاربری جدید
+              </h2>
+              <RegisterUser id={id} />
             </section>
-          ) : selectedOption === 'DeleteAccount' ? (
+          ) : selectedOption === "DeleteAccount" ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">حذف حساب کاربری</h2>
-              <DeleteUser id={id}/>
+              <DeleteUser id={id} />
             </section>
-          ) : selectedOption === 'CreateAppointment' ? (
+          ) : selectedOption === "CreateAppointment" ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">نوبت دهی</h2>
-              <CreateAppointment id={id}/>
+              <CreateAppointment id={id} />
             </section>
-          ) :selectedOption==='report'?(
+          ) : selectedOption === "report" ? (
             <section>
               <h2 className="text-xl font-semibold mb-4">گزارشات</h2>
-              <Reporting id={id}/>
+              <Reporting id={id} />
             </section>
-          ):(<section></section>)}
+          ) : (
+            <section></section>
+          )}
         </main>
       </div>
     </div>

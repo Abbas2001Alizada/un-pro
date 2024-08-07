@@ -2,7 +2,7 @@ import axios from "axios";
 import logo from "../../public/photoes/logo.png";
 import profile from "../../public/photoes/profile.jpg";
 import React, { useEffect, useState } from "react";
-import { Link, useMatch, useParams } from "react-router-dom";
+import { Link, Navigate, useMatch, useNavigate, useParams } from "react-router-dom";
 import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import Report from "./Report";
@@ -13,13 +13,31 @@ import  Completion from "./completion.jsx";
 import CoupleFinder from "./findCouple.jsx";
 
 const AddminDashboard = () => {
+  const token = sessionStorage.getItem("token");
   const match = useMatch('/UserDashboard/:id');
-  const id = match.params.id;
+  const id = sessionStorage.getItem("id");
   const [previewUrl, setPreviewUrl] = useState();
+  const navigate=useNavigate()
+
+  const useLogout = () => {
+
+    const logout = () => {
+      // Remove the token from localStorage or cookies
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("id");
+
+      // Redirect to the login page
+      navigate("/");
+    };
+
+    return logout;
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
-      try {
+      try { if (!token) {
+    navigate("/login")
+ }
         const response = await axios.get(`http://localhost:8038/users/${id}`);
         const { image } = response.data;
         setPreviewUrl(`http://localhost:8038/uploads/${image}`);
@@ -33,7 +51,6 @@ const AddminDashboard = () => {
 
   const [selectedOption, setSelectedOption] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   return (
     <div dir="rtl" className="min-h-screen flex flex-col bg-gradient-to-br from-red-900 via-red-700 to-red-400">
       {/* Navbar */}
@@ -60,9 +77,9 @@ const AddminDashboard = () => {
               >
                 <button>بازدید از پروفایل</button>
               </Link>
-              <Link to='/'
+              <Link onClick={useLogout()} to='/'
                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                <button>خروج از دشبورد</button>
+                <button >خروج از دشبورد</button>
               </Link>
             </div>
           )}

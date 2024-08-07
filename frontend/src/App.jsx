@@ -22,8 +22,8 @@ function App() {
         <Routes>
           <Route path="/records" element={<Record />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/AdminDashboard/:id" element={<AdminDashboard />} />
-          <Route path="/UserDashboard/:id" element={<UserDashboard />} />
+          <Route path="/AdminDashboard" element={   <AdminDashboard />  }/>
+          <Route path="/UserDashboard"  element={  <UserDashboard /> }/>
           <Route path="/" element={<DefaultLayout />} />
           <Route path="/pending" element={<PendingAppointment />} />
           <Route path="/processing" element={<ProcessingAppointment />} />
