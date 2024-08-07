@@ -13,10 +13,18 @@ const DeleteUser = ({ id }) => {
     try {
       const adminZone = await axios.get(`http://localhost:8038/users/${id}`);
       const userZone = await axios.get(`http://localhost:8038/users/${userId}`);
-      if (adminZone.data.zone === userZone.data.zone) {
+      if(adminZone.data.zone != userZone.data.zone){
+        setMessage("کاربر مربوط زون دیگری است")
+        setError("");
+        setShowPopup(true);
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 5000);
+      } else if (adminZone.data.zone === userZone.data.zone) {
         await axios.delete(`http://localhost:8038/users/${userId}`);
         setMessage("حساب کاربر با موفقیت حذف شد");
         setError("");
+        setUserId('')
         setShowPopup(true);
         setTimeout(() => {
           setShowPopup(false);
@@ -62,12 +70,7 @@ const DeleteUser = ({ id }) => {
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             {message && <p className="text-green-600">{message}</p>}
             {error && <p className="text-red-600">{error}</p>}
-            <button
-              onClick={() => setShowPopup(false)}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md"
-            >
-              بستن
-            </button>
+
           </div>
         </div>
       )}

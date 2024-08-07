@@ -71,7 +71,7 @@ const Reporting = ({ id }) => {
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
     pdf.save("marriage-form.pdf");
   };
-
+let date=new Date()
   return (
     <div className="p-4">
       <h2 className="text-center text-2xl mb-4">گزارش ملاقات</h2>
@@ -97,7 +97,7 @@ const Reporting = ({ id }) => {
       </div> */}
       <Bar data={data} />
       <div id='form-content' className="mt-4">
-        <p className='text-xl'>گزارش کلی سیستم</p>
+        <p className='text-xl'> گزارش کلی سیستم امروز {date.toLocaleDateString()}</p>
         <p>به تعداد: <span className='text-red-400'>{reportData.pending}</span> فامیل معلومات شان ثبت گردیده و اماده است تا نوبت دریافت نموده پروسه اخد نکاح خط خویش را طی مراحل نمایند </p>
         <p>به تعداد:<span className='text-blue-500'>{reportData.processing}</span> فامیل از طرف سیستم نوبت اخذ نموده و آماده طی مراحل است.</p>
         <p>به تعداد:<span className='text-green-500'>{reportData.done}</span> فامیل نکاح خط خویش را اخد نموده اند.</p>

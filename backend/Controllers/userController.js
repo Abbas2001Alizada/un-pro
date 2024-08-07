@@ -158,10 +158,9 @@ export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
-    console.log(id);
     const user = await User.findByPk(id);
 
-    if (!user) {
+    if (!user||user.mode==='deactive') {
       return res.status(404).json({ message: 'User not found' });
     }
 

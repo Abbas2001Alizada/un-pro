@@ -35,7 +35,7 @@ const FormDownload = ({ familyId,zone }) => {
           brideGfatherName: specification.data[1].GfatherName,
           brideAddress: specification.data[1].residency,
         });
-        console.log(specification.data[1].GfatherName);
+        const id=specification.data[0].coupleId
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -73,13 +73,14 @@ const FormDownload = ({ familyId,zone }) => {
         <div className="text-center mb-8 items-center">
           <h2 className="text-2xl font-bold mb-2">درخواست نکاح‌خط</h2>
           <h3 className="text-xl font-semibold">شهرت درخواست کنندگان</h3>
+          <h3 className="text-xl font-semibold">id درخواست کنندگان {id}</h3>
         </div>
         <p className="mb-4 text-right">به مقام محترم محکمه وثایق شهر کابل زون: {zone}</p>
         <p className="mb-4 text-right">
           ما دو نفر هر یک {formData.groomName} ولد/بنت {formData.groomFatherName}{" "}
-          ولدیت {formData.groomGfatherName} باشنده {formData.groomAddress} و
+          ولدیت {formData.groomGfatherName} باشنده ناحیه {formData.groomAddress} و
           {formData.brideName} ولد/بنت {formData.brideFatherName} ولدیت{" "}
-          {formData.brideGfatherName} باشنده {formData.brideAddress} در حال
+          {formData.brideGfatherName} باشنده ناحیه {formData.brideAddress} در حال
           داشتن اهلیت کامل حقوقی به رضا و رغبت خود میخواهیم ازدواج نماییم،
           خواهشمندیم در طی مراحل و توثیق عقد نکاح ما به شعبه مربوط خویش هدایت
           فرمایید.
