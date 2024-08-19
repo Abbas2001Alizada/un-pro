@@ -16,11 +16,9 @@ const FormDownload = ({ familyId,zone }) => {
     brideGfatherName: "",
     brideAddress: "",
   });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(id);
         const specification = await axios.post(
           "http://localhost:8038/records/getName",
           { id }
@@ -35,20 +33,19 @@ const FormDownload = ({ familyId,zone }) => {
           brideGfatherName: specification.data[1].GfatherName,
           brideAddress: specification.data[1].residency,
         });
-        const id=specification.data[0].coupleId
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   const handleDownloadPDF = async () => {
     const input = document.getElementById("form-content");
     const canvas = await html2canvas(input, {
       scale: 2,
-      width:900,
+      width:630,
       height: 1300,
     });
     const imgData = canvas.toDataURL("image/png");
@@ -73,7 +70,7 @@ const FormDownload = ({ familyId,zone }) => {
         <div className="text-center mb-8 items-center">
           <h2 className="text-2xl font-bold mb-2">درخواست نکاح‌خط</h2>
           <h3 className="text-xl font-semibold">شهرت درخواست کنندگان</h3>
-          <h3 className="text-xl font-semibold">id درخواست کنندگان {id}</h3>
+          <h3 className="text-xl font-semibold">  شماره فامیل درخواست کنندگان {id}</h3>
         </div>
         <p className="mb-4 text-right">به مقام محترم محکمه وثایق شهر کابل زون: {zone}</p>
         <p className="mb-4 text-right">

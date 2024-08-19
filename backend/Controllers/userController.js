@@ -2,6 +2,29 @@ import User from "../Models/user.js";
 import fs from 'fs'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { log } from "console";
+
+
+export const getUsersByZone = async (req, res) => {
+  const { zone } = req.params;
+
+  try {
+    // Fetch users who are in the same zone
+    const users = await User.findAll({
+      where: { zone: zone, mode: "active" }, // Assuming "mode" indicates if the user is active
+      attributes: ['id', 'name', 'username', 'email', 'role'], // Select the necessary fields
+    });
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'هیچ کاربری در این زون وجود ندارد' });
+    }
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users by zone:', error);
+    res.status(500).json({ error: 'خطا در بازیابی کاربران' });
+  }
+};
 
 
 export const login = async (req, res) => {
@@ -36,6 +59,7 @@ export const login = async (req, res) => {
       userId: user.id,
       userRole: user.role,
       userMode: user.mode,
+      userZone:user.zone,
       message: 'ورود موفقیت آمیز بود.'
     });
   } catch (error) {
@@ -46,6 +70,7 @@ export const login = async (req, res) => {
 // Controller function to create a new user
 export const createUser = async (req, res) => {
   const { name, userName, Password, email, role, zone,mode } = req.body;
+
 
   // Basic validation
   if (!name || !userName || !Password || !email || !role) {

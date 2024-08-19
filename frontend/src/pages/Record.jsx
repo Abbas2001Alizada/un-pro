@@ -3,6 +3,7 @@ import LoadingOverlay from "../component/LoadingOverlay.jsx";
 import axios from "axios";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { Link } from "react-router-dom";
 
 const Record = () => {
   const initialData = {
@@ -413,6 +414,7 @@ const Record = () => {
           >
             ارسال
           </button>
+          <Link  to='/ '  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">برگشت</Link>
         </div>
       </form>
 

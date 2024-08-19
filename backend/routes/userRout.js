@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {  getAllUsers, createUser, updateUser,  getUserDetails,  deleteUser, login, } from '../Controllers/userController.js';
+import {  getAllUsers, createUser, updateUser,  getUserDetails,  deleteUser, login, getUsersByZone, } from '../Controllers/userController.js';
 import upload from '../middleware/upload.js';
 
 
@@ -12,6 +12,7 @@ router.post('/createUser', createUser);
 router.delete('/:id',deleteUser);
 router.post('/login', login);
 router.get('/:id', getUserDetails);
+router.get('/zone/:zone', getUsersByZone);
 
 router.put('/:id', upload.single("image"), updateUser);
 export default router;

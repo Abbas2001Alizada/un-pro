@@ -6,10 +6,11 @@ const AddUser = ({ id }) => {
     name: "",
     userName: "",
     Password: "",
+    confirmPassword: "",
     email: "",
     role: "",
     zone: "",
-    mode:"active"
+    mode: "active",
   });
 
   const [errors, setErrors] = useState({});
@@ -23,11 +24,12 @@ const AddUser = ({ id }) => {
 
   const validate = () => {
     const newErrors = {};
-    const { name, userName, Password, email, role } = form;
+    const { name, userName, Password, confirmPassword, email, role } = form;
 
     if (!name.trim()) newErrors.name = "نام ضروری است";
     if (!userName.trim()) newErrors.userName = "نام کاربری ضروری است";
     if (Password.length < 6) newErrors.Password = "رمز عبور باید حداقل ۶ حرف باشد";
+    if (Password !== confirmPassword) newErrors.confirmPassword = "رمز عبور مطابقت ندارد";
     if (!email.trim()) newErrors.email = "ایمیل ضروری است";
     if (role !== "کاربر") newErrors.role = "نقش باید کاربر باشد";
 
@@ -58,16 +60,18 @@ const AddUser = ({ id }) => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:8038/users/createUser", form);
+      const { confirmPassword, ...formData } = form; // Exclude confirmPassword
+      const response = await axios.post("http://localhost:8038/users/createUser", formData);
       setMessage("اطلاعات موفقانه ثبت گردید");
       setForm({
         name: "",
         userName: "",
         Password: "",
+        confirmPassword: "",
         email: "",
         role: "",
         zone: form.zone, // Maintain zone value after form reset
-        mode:""
+        mode: "active",
       });
       setErrors({});
       setTimeout(() => {
@@ -75,7 +79,7 @@ const AddUser = ({ id }) => {
       }, 5000); // Clear message after 5 seconds
     } catch (error) {
       console.error("Error:", error);
-      if (error.response && error.response.data && error.response.data.message && error.response.data.message.includes("username must be unique")) {
+      if (error.response && error.response.data && error.response.data.error && error.response.data.error.includes("Username already exists")) {
         setMessage("نام کاربری تکراری است");
       } else {
         setMessage("خطا در ارسال اطلاعات");
@@ -97,7 +101,7 @@ const AddUser = ({ id }) => {
         <h2 className="text-2xl mb-4 text-center text-white">افزودن کاربر جدید</h2>
 
         <div className="grid grid-cols-1 gap-4">
-          {["name", "userName", "Password", "email", "role"].map((field) => (
+          {["name", "userName", "Password", "confirmPassword", "email", "role"].map((field) => (
             <div key={field}>
               <label
                 className="block text-sm font-bold mb-2 text-white"
@@ -106,6 +110,7 @@ const AddUser = ({ id }) => {
                 {field === "name" && "نام"}
                 {field === "userName" && "نام کاربری"}
                 {field === "Password" && "رمز عبور"}
+                {field === "confirmPassword" && "تأیید رمز عبور"}
                 {field === "email" && "ایمیل"}
                 {field === "role" && "نقش"}
               </label>
@@ -120,22 +125,11 @@ const AddUser = ({ id }) => {
                   <option value="">انتخاب نقش</option>
                   <option value="کاربر">کاربر</option>
                 </select>
-              ) : field === "password" ? (
-                <input
-                  id={field}
-                  name={field}
-                  type="password"
-                  value={form[field]}
-                  onChange={handleChange}
-                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                    errors[field] ? "border-red-500" : ""
-                  }`}
-                />
               ) : (
                 <input
                   id={field}
                   name={field}
-                  type={field === "email" ? "email" : "text"}
+                  type={field === "Password" || field === "confirmPassword" ? "Password" : "text"}
                   value={form[field]}
                   onChange={handleChange}
                   className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${

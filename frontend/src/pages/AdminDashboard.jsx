@@ -1,36 +1,34 @@
 import axios from "axios";
 import logo from "../../public/photoes/logo.png";
 import React, { useEffect, useState } from "react";
-import { Link, Navigate, useMatch, useNavigate } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import RegisterUser from "./RegisterUser";
 import DeleteUser from "./deleteUser";
 import CreateAppointment from "./CreateAppointment";
 import Reporting from "./Report";
-import LoginPage from "./LoginPage";
+import UsersInZone from "./users";
 
 const AdminDashboard = () => {
   const token = sessionStorage.getItem("token");
-  const match = useMatch("/AdminDashboard/:id");
   const id = sessionStorage.getItem("id");
   const [previewUrl, setPreviewUrl] = useState();
-  const [selectedOption, setSelectedOption] = useState("today");
+  const [selectedOption, setSelectedOption] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const useLogout = () => {
 
+  const useLogout = () => {
     const logout = () => {
-      // Remove the token from localStorage or cookies
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("id");
-
-      // Redirect to the login page
+      sessionStorage.removeItem("zone");
       navigate("/");
     };
-
     return logout;
   };
+
   if (!token) {
-     navigate("/login")
+    navigate("/login");
   }
 
   useEffect(() => {
@@ -74,7 +72,7 @@ const AdminDashboard = () => {
             onClick={() => setDropdownOpen(!dropdownOpen)}
           />
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+            <div className="z-20 absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
               <Link
                 to={`/profile/${id}`}
                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -93,8 +91,24 @@ const AdminDashboard = () => {
       </nav>
 
       <div className="flex flex-grow flex-col md:flex-row">
+        {/* Hamburger Menu for Mobile */}
+        <div className="bg-red-950 text-white p-4 md:hidden flex justify-between items-center">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-xl font-bold"
+          >
+            ☰
+          </button>
+        </div>
+
         {/* Sidebar */}
-        <aside className="bg-red-700 text-white w-full md:w-1/4 p-4">
+        <aside
+          className={`bg-red-700 text-white w-full md:w-1/4 p-4 transform ${
+            sidebarOpen
+              ? "translate-x-0 "
+              : "hidden md:flex lg:flex -translate-x-full"
+          } hi md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        >
           <ul>
             <li
               className={`p-2 cursor-pointer ${
@@ -128,6 +142,14 @@ const AdminDashboard = () => {
             >
               گزارشات
             </li>
+            <li
+              className={`p-2 cursor-pointer mt-2 ${
+                selectedOption === "users" && "bg-red-600"
+              }`}
+              onClick={() => setSelectedOption("users")}
+            >
+              کارمندان زون
+            </li>
           </ul>
         </aside>
 
@@ -154,6 +176,11 @@ const AdminDashboard = () => {
             <section>
               <h2 className="text-xl font-semibold mb-4">گزارشات</h2>
               <Reporting id={id} />
+            </section>
+          ): selectedOption === "users" ? (
+            <section>
+              <h2 className="text-xl font-semibold mb-4">گزارشات</h2>
+              <UsersInZone />
             </section>
           ) : (
             <section></section>
